@@ -1,0 +1,12 @@
+generator:
+  downsample_name: simple
+  bottle_neck_name: resnet
+  upsample_name: simple
+  downsample_params:
+    hidden_channels: 64
+  bottle_neck_params:
+    n_blocks: 9
+  upsample_content_params:
+    out_channels: 9
+  upsample_attn_params:
+    out_channels: 10

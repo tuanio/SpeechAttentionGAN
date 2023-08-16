@@ -1,0 +1,72 @@
+networks:
+  simple_downsample:
+    n_blocks: 3
+    kernel_sizes:
+    - 7
+    - 3
+    - 3
+    strides:
+    - 1
+    - 2
+    - 2
+    paddings:
+    - 0
+    - 1
+    - 1
+    dilations:
+    - 1
+    - 1
+    - 1
+  simple_upsample:
+    n_blocks: 3
+    kernel_sizes:
+    - 3
+    - 3
+    - 10
+    strides:
+    - 2
+    - 2
+    - 1
+    paddings:
+    - 1
+    - 1
+    - 0
+    dilations:
+    - 1
+    - 1
+    - 1
+model:
+  generator:
+    downsample_name: simple
+    bottle_neck_name: resnet
+    upsample_name: simple
+    downsample_params:
+      in_channels: 2
+      hidden_channels: 64
+      channel_expand: 2
+      n_blocks: ${networks.simple_downsample.n_blocks}
+      kernel_sizes: ${networks.simple_downsample.kernel_sizes}
+      strides: ${networks.simple_downsample.strides}
+      paddings: ${networks.simple_downsample.paddings}
+      dilations: ${networks.simple_downsample.dilations}
+    bottle_neck_params:
+      n_blocks: 9
+      kernel_size: 3
+      stride: 1
+      padding: 1
+    upsample_content_params:
+      out_channels: 9
+      channel_expand: ${model.generator.downsample_params.channel_expand}
+      n_blocks: ${networks.simple_upsample.n_blocks}
+      kernel_sizes: ${networks.simple_upsample.kernel_sizes}
+      strides: ${networks.simple_upsample.strides}
+      paddings: ${networks.simple_upsample.paddings}
+      dilations: ${networks.simple_upsample.dilations}
+    upsample_attn_params:
+      out_channels: 10
+      channel_expand: ${model.generator.downsample_params.channel_expand}
+      n_blocks: ${networks.simple_upsample.n_blocks}
+      kernel_sizes: ${networks.simple_upsample.kernel_sizes}
+      strides: ${networks.simple_upsample.strides}
+      paddings: ${networks.simple_upsample.paddings}
+      dilations: ${networks.simple_upsample.dilations}

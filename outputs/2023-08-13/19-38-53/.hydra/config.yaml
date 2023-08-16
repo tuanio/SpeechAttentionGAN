@@ -1,0 +1,9 @@
+generator:
+  downsample_params:
+    in_channels: 2
+  bottle_neck_params:
+    n_blocks: 9
+  upsample_content_params:
+    out_channels: 9
+  upsample_attn_params:
+    out_channels: 10
