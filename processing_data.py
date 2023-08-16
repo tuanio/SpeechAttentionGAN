@@ -66,7 +66,9 @@ def processing(path, is_train):
     mag_coms, mag_max_size = cutting(magnitude, is_train)
     phase_coms, phase_max_size = cutting(phase, is_train)
 
-    return mag_coms, phase_coms, mag_max_size
+    packs = [dict(magnitude=m, phase=p) for m, p in zip(mag_coms, phase_coms)]
+    ret_data = {"data": packs, "max_size": mag_max_size, "path": path}
+    return ret_data
 
 
 def main(args):
@@ -84,19 +86,31 @@ def main(args):
 
     is_train = args.stage == "train"
 
+    root_save_path = os.path.join(args.dest_path, args.stage)
+    src_save_path = os.path.join(root_save_path, args.src_domain)
+    tgt_save_path = os.path.join(root_save_path, args.tgt_domain)
+
+    if not os.path.exists(src_save_path):
+        os.system("mkdir -p " + src_save_path)
+
+    if not os.path.exists(tgt_save_path):
+        os.system("mkdir -p " + tgt_save_path)
+
     print(f"Processing for {args.src_domain}")
     with cf.ThreadPoolExecutor(max_workers=args.threads) as exe:
         src_data = list(
             exe.map(partial(processing, is_train=is_train), all_src_audio_path)
         )
+    print(f"Saving {args.src_domain} data.")
+    torch.save(src_data, src_save_path)
 
     print(f"Processing for {args.tgt_domain}")
     with cf.ThreadPoolExecutor(max_workers=args.threads) as exe:
         tgt_data = list(
             exe.map(partial(processing, is_train=is_train), all_tgt_audio_path)
         )
-
-    print("Saving...")
+    print(f"Saving {args.tgt_domain} data.")
+    torch.save(tgt_data, tgt_save_path)
 
 
 if __name__ == "__main__":
@@ -107,6 +121,7 @@ if __name__ == "__main__":
     )  # train, test, valid, predict (name of a folder)
     parser.add_argument("--src-domain", type=str, default="clean")  # name of subfolder
     parser.add_argument("--tgt-domain", type=str, default="noisy")  # name of subfolder
+    parser.add_argument("--dest-path", type=str)
     parser.add_argument(
         "--stage", type=str, default="train"
     )  # create for train, test, predict
