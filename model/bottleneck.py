@@ -25,11 +25,11 @@ class ResNetBottleNeck(nn.Module):
         norm_layer=nn.BatchNorm2d,  # can be instance norm
     ):
         super().__init__()
+        self.norm_layer = norm_layer
         layers = []
         for _ in range(n_blocks):
             layers.extend(self.create_block(in_channels, kernel_size, stride, padding))
         self.out_dim = in_channels
-        self.norm_layer = norm_layer
         self.model = nn.Sequential(*layers)
 
         for m in self._modules:

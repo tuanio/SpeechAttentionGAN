@@ -31,6 +31,8 @@ class SimpleDownsample(nn.Module):
         super().__init__()
         layers = []
         out_channels = hidden_channels
+        self.norm_layer = norm_layer
+
         for idx in range(n_blocks):
             layers.extend(
                 self.create_block(
@@ -47,7 +49,6 @@ class SimpleDownsample(nn.Module):
         self.out_dim = out_channels // channel_expand
         self.model = nn.Sequential(*layers)
         self.pad_reflect = nn.ReflectionPad2d(3)
-        self.norm_layer = norm_layer
 
         for m in self._modules:
             if isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):

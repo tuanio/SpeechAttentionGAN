@@ -4,6 +4,7 @@ import random
 import torchaudio
 import torchvision.transforms as TVT
 import torchvision
+from tqdm.auto import tqdm
 from typing import List
 from collections import defaultdict
 from torch.utils.data import Dataset
@@ -31,12 +32,19 @@ class SpeechDataset(Dataset):
         tgt_data = torch.load(os.path.join(path, self.tgt_domain + pickle_ext))
 
         if is_train or not is_train:
-            self.src_pool = [
-                mag_and_phase for i in src_data for mag_and_phase in i["data"]
-            ]
-            self.tgt_pool = [
-                mag_and_phase for i in tgt_data for mag_and_phase in i["data"]
-            ]
+            pbar = tqdm(desc="Preparing for " + self.src_domain)
+            self.src_pool = []
+            for i in src_data:
+                for mag_and_phase in i['data']:
+                    self.src_pool.append(mag_and_phase)
+                    pbar.update(1)
+            
+            pbar = tqdm(desc="Preparing for " + self.tgt_domain)
+            self.tgt_pool = []
+            for i in tgt_data:
+                for mag_and_phase in i['data']:
+                    self.tgt_pool.append(mag_and_phase)
+                    pbar.update(1)
         else:
             # for testing, but currently train only
             pass
