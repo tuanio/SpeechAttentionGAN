@@ -120,11 +120,11 @@ class MagnitudeAttentionGAN(L.LightningModule):
 
         optimizer_g, optimizer_d = self.optimizers()
 
-        try:
-            if self.schedulers():
-                scheduler_g, scheduler_d = self.schedulers()
-        except:
-            scheduler_g, scheduler_d = None, None
+        scheduler_g, scheduler_d = None, None
+
+        if self.lr_schedulers():
+            scheduler_g, scheduler_d = self.lr_schedulers()
+            
 
         lambda_idt = self.hparams.weight.lambda_idt
         lambda_cycle_B = self.hparams.weight.lambda_cycle_A
