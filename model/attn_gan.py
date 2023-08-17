@@ -290,7 +290,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
         with torch.inference_mode():
             mag_coms = self.mag_coms.type_as(self.gen_A2B.downsample.model[0].weight)
             fake_magnitude_B = self.gen_A2B(mag_coms, self.gen_mask(mag_coms, False)).cpu()
-            mags = torch.cat([i for i in fake_magnitude_B], dim=2)[:, :, :self.max_size - FIX_W]
+            mags = torch.cat([i for i in fake_magnitude_B], dim=2)[:, :, :self.phase.size(2)]
 
             wav = mags + np.exp(self.phase * 1j)
             data = [[wandb.Audio(wav.numpy(), sample_rate=self.sr)]]
