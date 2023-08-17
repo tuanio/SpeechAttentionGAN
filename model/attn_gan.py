@@ -259,7 +259,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
         mag_B = torch.stack([i[1] for i in self.training_output], dim=0)
 
         with torch.inference_mode():
-            mask = self.gen_mask(mag_A, False)
+            mask = self.gen_mask(mag_A, False).type_as(mag_A)
 
             fake_B = self.gen_A2B(mag_A, mask).cpu()
             cycle_A = self.gen_B2A(fake_B, mask).cpu()
