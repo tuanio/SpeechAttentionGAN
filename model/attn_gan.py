@@ -295,8 +295,9 @@ class MagnitudeAttentionGAN(L.LightningModule):
             mags = torch.cat([i for i in fake_magnitude_B], dim=2)[:, :, :self.phase.size(2)]
 
             wav = self.istft(mags + torch.exp(self.phase * 1j))
-            data = [[wandb.Audio(wav.numpy(), sample_rate=self.sr)]]
-            self.logger.log_table(key='generated_audio', columns=['Generated_Audio'], data=data)
+            torchaudio.save(wav, 'temporary.wav')
+            data = [[wandb.Audio('temporary.wav', caption="Clean -> Noisy")]]
+            self.logger.log_table(key='AudioTable', columns=['Generated_Audio'], data=data)
 
     def on_train_epoch_end(self):
         self.plot_wav()
