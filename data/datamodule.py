@@ -42,7 +42,7 @@ class SpeechDataModule(L.LightningDataModule):
         return DataLoader(
             self.datasets["train"],
             batch_size=self.hparams.dm_config.batch_size,
-            shuflfe=True,
+            shuffle=True,
             num_workers=self.hparams.dm_config.num_workers,
             pin_memory=self.hparams.dm_config.pin_memory,
             persistent_workers=self.hparams.dm_config.persistent_workers,
@@ -53,7 +53,7 @@ class SpeechDataModule(L.LightningDataModule):
         return DataLoader(
             self.datasets["valid"],
             batch_size=self.hparams.dm_config.batch_size,
-            shuflfe=False,
+            shuffle=False,
             num_workers=self.hparams.dm_config.num_workers,
             pin_memory=self.hparams.dm_config.pin_memory,
             persistent_workers=self.hparams.dm_config.persistent_workers,
@@ -64,7 +64,7 @@ class SpeechDataModule(L.LightningDataModule):
         return DataLoader(
             self.datasets["test"],
             batch_size=self.hparams.dm_config.batch_size,
-            shuflfe=False,
+            shuffle=False,
             num_workers=self.hparams.dm_config.num_workers,
             pin_memory=self.hparams.dm_config.pin_memory,
             persistent_workers=self.hparams.dm_config.persistent_workers,
