@@ -264,7 +264,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
             fake_B = self.gen_A2B(mag_A, mask)
             cycle_A = self.gen_B2A(fake_B, mask)
 
-            fake_A = self.gen_B2A(input_B, mask)
+            fake_A = self.gen_B2A(mag_B, mask)
             cycle_B = self.gen_A2B(fake_A, mask)
 
         A = torch.cat([real_A.cpu(), fake_A.cpu(), cycle_A.cpu()], dim=0)
