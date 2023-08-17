@@ -1,3 +1,4 @@
+from torch import Tensor
 import lightning as L
 import torchaudio.transforms as T
 from itertools import chain
