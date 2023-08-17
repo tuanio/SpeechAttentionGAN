@@ -15,6 +15,7 @@ import librosa
 
 FIX_W = 128
 
+
 class MagnitudeAttentionGAN(L.LightningModule):
     """
     call A, B as two domain considering
@@ -44,7 +45,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
 
         self.stft = T.Spectrogram(**istft_params, power=None)
 
-        custom_src_audio_path = '/home/stud_vantuan/share_with_150/cache/helicopter_1h_30m/test/clean/5514-19192-0038.flac'
+        custom_src_audio_path = "/home/stud_vantuan/share_with_150/cache/helicopter_1h_30m/test/clean/5514-19192-0038.flac"
         wav, sr = torchaudio.load(custom_src_audio_path)
         spectrogram = self.stft(wav)
         magnitude = torch.abs(spectrogram)
@@ -99,15 +100,19 @@ class MagnitudeAttentionGAN(L.LightningModule):
             self.disc_B.parameters(),
             self.disc_B2.parameters(),
         ]
-        optim_g = optimizer_class(chain(*g_params), **self.hparams.cfg.optimizer.params)
-        optim_d = optimizer_class(chain(*d_params), **self.hparams.cfg.optimizer.params)
+        optim_g = optimizer_class(
+            chain(*g_params), **self.hparams.cfg.optimizer.params_gen
+        )
+        optim_d = optimizer_class(
+            chain(*d_params), **self.hparams.cfg.optimizer.params_disc
+        )
 
         if scheduler_class != None:
             scheduler_g = {
                 "scheduler": scheduler_class(
                     optim_g,
                     total_steps=self.hparams.total_steps,
-                    **self.hparams.cfg.scheduler.params
+                    **self.hparams.cfg.scheduler.params_gen
                 ),
                 "interval": "step",  # or 'epoch'
                 "frequency": 1,
@@ -117,7 +122,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
                 "scheduler": scheduler_class(
                     optim_d,
                     total_steps=self.hparams.total_steps,
-                    **self.hparams.cfg.scheduler.params
+                    **self.hparams.cfg.scheduler.params_disc
                 ),
                 "interval": "step",  # or 'epoch'
                 "frequency": 1,
@@ -289,13 +294,17 @@ class MagnitudeAttentionGAN(L.LightningModule):
         with torch.inference_mode():
             mag_coms = self.mag_coms.type_as(self.gen_A2B.downsample.model[0].weight)
             fake_magnitude_B = self.gen_A2B(mag_coms, self.gen_mask(mag_coms, False))
-            mags = torch.cat([i for i in fake_magnitude_B], dim=2)[:, :, :self.phase.size(2)]
+            mags = torch.cat([i for i in fake_magnitude_B], dim=2)[
+                :, :, : self.phase.size(2)
+            ]
 
             cal_istft = T.InverseSpectrogram(**self.hparams.istft_params).cpu()
             wav = cal_istft(mags.cpu() + torch.exp(self.phase.cpu() * 1j))
-            torchaudio.save('temporary.wav', wav, self.sr)
-            data = [[wandb.Audio('temporary.wav', caption="Clean -> Noisy")]]
-            self.logger.log_table(key='AudioTable', columns=['Generated_Audio'], data=data)
+            torchaudio.save("temporary.wav", wav, self.sr)
+            data = [[wandb.Audio("temporary.wav", caption="Clean -> Noisy")]]
+            self.logger.log_table(
+                key="AudioTable", columns=["Generated_Audio"], data=data
+            )
 
     def on_train_epoch_end(self):
         self.plot_wav()

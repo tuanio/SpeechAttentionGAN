@@ -8,27 +8,37 @@ import lightning.pytorch as L
 
 @hydra.main(version_base=None, config_path="conf", config_name="default_attn_gan")
 def main(cfg: DictConfig):
-    dm = SpeechDataModule(cfg.dm)
 
-    total_steps = len(dm.train_dataloader()) * cfg.trainer.max_epochs
+    x = torch.rand(4, 1, 129, 128)
+    m = torch.rand(4, 1, 129, 128)
 
-    model = MagnitudeAttentionGAN(
-        cfg.model, total_steps=total_steps, istft_params=cfg.feature.istft_params
-    )
+    gen = AttentionGuideGenerator(**cfg.model.generator)
 
-    logger = None
-    if cfg.logger.wandb.have:
-        logger = L.loggers.wandb.WandbLogger(**cfg.logger.wandb.params)
+    o = gen(x, m)
 
-    trainer = L.Trainer(logger=logger, **cfg.trainer)
+    print(o.shape)
 
-    if cfg.exp.train:
-        print("Start training...")
-        trainer.fit(model, datamodule=dm)
+    # dm = SpeechDataModule(cfg.dm)
 
-    if cfg.exp.test:
-        print("Start testing...")
-        trainer.test(model, datamodule=dm)
+    # total_steps = len(dm.train_dataloader()) * cfg.trainer.max_epochs
+
+    # model = MagnitudeAttentionGAN(
+    #     cfg.model, total_steps=total_steps, istft_params=cfg.feature.istft_params
+    # )
+
+    # logger = None
+    # if cfg.logger.wandb.have:
+    #     logger = L.loggers.wandb.WandbLogger(**cfg.logger.wandb.params)
+
+    # trainer = L.Trainer(logger=logger, **cfg.trainer)
+
+    # if cfg.exp.train:
+    #     print("Start training...")
+    #     trainer.fit(model, datamodule=dm)
+
+    # if cfg.exp.test:
+    #     print("Start testing...")
+    #     trainer.test(model, datamodule=dm)
 
 
 if __name__ == "__main__":

@@ -35,14 +35,14 @@ class SpeechDataset(Dataset):
             pbar = tqdm(desc="Preparing for " + self.src_domain)
             self.src_pool = []
             for i in src_data:
-                for mag_and_phase in i['data']:
+                for mag_and_phase in i["data"]:
                     self.src_pool.append(mag_and_phase)
                     pbar.update(1)
-            
+
             pbar = tqdm(desc="Preparing for " + self.tgt_domain)
             self.tgt_pool = []
             for i in tgt_data:
-                for mag_and_phase in i['data']:
+                for mag_and_phase in i["data"]:
                     self.tgt_pool.append(mag_and_phase)
                     pbar.update(1)
         else:

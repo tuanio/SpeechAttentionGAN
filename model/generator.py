@@ -36,11 +36,11 @@ class AttentionGuideGenerator(nn.Module):
     def forward(self, x: Tensor, mask: Tensor):
         inp = torch.cat([x, mask], dim=1)
         enc = self.downsample(inp)
-
+        print("After downsample:", enc.shape)
         emb = self.bottle_neck(enc)
-
+        print("After bottle neck:", emb.shape)
         attn_masks = self.softmax(self.upsample_attn(emb))
-
+        print("After upsample:", attn_masks.shape)
         contents = self.tanh(self.upsample_content(emb))
 
         bg_mask = attn_masks[:, -1:, :, :]

@@ -1,7 +1,7 @@
 networks:
   simple_downsample:
     n_blocks: 3
-    kernel_sizes: [7, 3, 3]
+    kernel_sizes: [[5, 7], 3, 3]
     strides: [1, 2, 2]
     paddings: [0, 1, 1]
     dilations: [1, 1, 1]
@@ -75,23 +75,30 @@ model:
     in_channels: 1
     hidden_channels: 64
     n_layers: 3
-    kernel_sizes: [3, 4, 4, 4, 5]
+    kernel_sizes: [4, 4, 4, 4, 5]
     strides: [2, 2, 1, 1, 1]
     padding: 1
     channel_expand: 2
     leakyrelu_slope: 0.2
   optimizer:
-    name: adamw
-    grad_clip: 5
-    params:
-      lr: 0.0003
+    name: adam
+    grad_clip: 0
+    params_gen:
+      lr: 0.0002
       betas: [0.5, 0.999]
-      weight_decay: 0.001
+      weight_decay: 0.0001
+    params_disc:
+      lr: 0.0001
+      betas: [0.5, 0.999]
+      weight_decay: 0.0001
   scheduler:
     name: one_cycle_lr
-    params:
-      max_lr: ${model.optimizer.params.lr}
-      pct_start: 0.4
+    params_gen:
+      max_lr: ${model.optimizer.params_gen.lr}
+      pct_start: 0.5
+    params_disc:
+      max_lr: ${model.optimizer.params_disc.lr}
+      pct_start: 0.5
   mask: # set to zero to remove
     freq_masks: 0
     freq_width: 0
@@ -107,7 +114,7 @@ logger:
     have: true
     params:
       project: speech_attn_gan_helicopter
-      name: speech_attn_gan_1
+      name: speech_attn_gan_runable
 
 trainer:
   devices: 4
