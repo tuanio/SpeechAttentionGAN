@@ -181,8 +181,8 @@ class MagnitudeAttentionGAN(L.LightningModule):
         fake_A = self.gen_B2A(input_B, self.gen_mask(input_B, True))
         cycle_B = self.gen_A2B(fake_A, self.gen_mask(fake_B, False))
 
-        adv_1_loss = self.cal_adv_loss(self.disc_B(fake_B), True) + self.cal_adv_loss(
-            self.disc_A(fake_A), True
+        adv_1_loss = self.cal_adv_loss(self.disc_B(fake_A), True) + self.cal_adv_loss(
+            self.disc_A(fake_B), True
         )
         adv_2_loss = self.cal_adv_loss(self.disc_B2(cycle_B), True) + self.cal_adv_loss(
             self.disc_A2(cycle_A), True
@@ -237,13 +237,13 @@ class MagnitudeAttentionGAN(L.LightningModule):
         cycle_A = self.shuffle_data(cycle_A)
         cycle_B = self.shuffle_data(cycle_B)
 
-        d_A_real_loss = self.cal_adv_loss(self.disc_A(input_A), True)
-        d_A_fake_inp = self.disc_A(fake_A.detach())
-        d_A_fake_loss = self.cal_adv_loss(d_A_fake_inp, False)
+        d_A_real_loss = self.cal_adv_loss(self.disc_A(input_B), True)
+        d_B_fake_inp = self.disc_A(fake_B.detach())
+        d_A_fake_loss = self.cal_adv_loss(d_B_fake_inp, False)
 
-        d_B_real_loss = self.cal_adv_loss(self.disc_B(input_B), True)
-        d_B_fake_inp = self.disc_B(fake_B.detach())
-        d_B_fake_loss = self.cal_adv_loss(d_B_fake_inp, False)
+        d_B_real_loss = self.cal_adv_loss(self.disc_B(input_A), True)
+        d_A_fake_inp = self.disc_B(fake_A.detach())
+        d_B_fake_loss = self.cal_adv_loss(d_A_fake_inp, False)
 
         d_A2_real_loss = self.cal_adv_loss(self.disc_A2(input_A), True)
         d_A2_fake_inp = self.disc_A2(cycle_A.detach())
