@@ -21,7 +21,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
 
         self.istft = T.InverseSpectrogram(**istft_params)
 
-    def setup(self):
+    def setup(self, stage=None):
         self.gen_A2B = AttentionGuideGenerator(**self.hparams.cfg.generator)
         self.gen_B2A = AttentionGuideGenerator(**self.hparams.cfg.generator)
 
