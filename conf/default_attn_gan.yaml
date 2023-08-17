@@ -108,6 +108,7 @@ logger:
 trainer:
   devices: 4
   max_epochs: 50
+  log_every_n_steps: 2
 
 exp:
   train: true
