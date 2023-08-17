@@ -70,6 +70,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
         d_params = [
             p.parameters() for i, p in vars(self).items() if i.startswith("disc_")
         ]
+        print(g_params, d_params)
         optim_g = optimizer_class(chain(*g_params), **self.hparams.cfg.optimizer.params)
         optim_d = optimizer_class(chain(*d_params), **self.hparams.cfg.optimizer.params)
 
