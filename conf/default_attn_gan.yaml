@@ -26,7 +26,7 @@ dm:
   dataset:
     domains: [clean, noisy]
     src_domain: clean
-    img_size: [129, 128]
+    # img_size: [129, 128]
 
 model:
   generator:
