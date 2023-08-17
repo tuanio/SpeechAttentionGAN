@@ -94,8 +94,8 @@ def main(args):
     is_train = args.stage == "train"
 
     root_save_path = os.path.join(args.dest_path, args.stage)
-    src_save_path = os.path.join(root_save_path, args.src_domain)
-    tgt_save_path = os.path.join(root_save_path, args.tgt_domain)
+    src_save_path = os.path.join(root_save_path, args.src_domain + '.pt')
+    tgt_save_path = os.path.join(root_save_path, args.tgt_domain + '.pt')
 
     if not os.path.exists(src_save_path):
         os.system("mkdir -p " + src_save_path)
