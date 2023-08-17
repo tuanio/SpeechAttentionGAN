@@ -68,12 +68,9 @@ class SpeechDataset(Dataset):
     def __getitem__(self, idx):
         # return magnitude_A (input_A), magnitude_B (input_B), phase_A (input_phase_A), phase_B (input_phase_B)
         # fix select by index
-        src_file = self.src_pool[idx]
+        src_audio = self.src_pool[idx]
         # randomly choice tgt domain
-        tgt_file = random.choice(self.tgt_pool)
-
-        src_audio = torch.load(src_file)
-        tgt_file = torch.load(tgt_file)
+        tgt_audio = random.choice(self.tgt_pool)
 
         magnitude_A = self.transforms(src_audio["magnitude"])
         phase_A = self.transforms(src_audio["phase"])
