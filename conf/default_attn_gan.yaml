@@ -95,8 +95,11 @@ model:
     lambda_idt: 1
 
 logger:
-  project: speech_attn_gan_helicopter
-  name: speech_attn_gan_1
+  wandb:
+    have: false
+    params:
+      project: speech_attn_gan_helicopter
+      name: speech_attn_gan_1
 
 trainer:
   devices: 4

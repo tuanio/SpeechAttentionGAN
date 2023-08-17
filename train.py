@@ -10,7 +10,11 @@ import lightning.pytorch as L
 def main(cfg: DictConfig):
     dm = SpeechDataModule(cfg.dm)
     model = MagnitudeAttentionGAN(cfg.model, istft_params=cfg.feature.istft_params)
-    logger = L.loggers.wandb.WandbLogger(**cfg.logger.wandb)
+    
+    logger = None
+    if cfg.logger.wandb.have:
+        logger = L.loggers.wandb.WandbLogger(**cfg.logger.wandb.params)
+    
     trainer = L.Trainer(logger=logger, **cfg.trainer)
 
     if cfg.stage.train:
