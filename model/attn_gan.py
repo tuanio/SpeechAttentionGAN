@@ -259,7 +259,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
         mag_B = torch.stack([i[1] for i in self.training_output], dim=0).type_as(self.gen_A2B.downsample.model[0].weight)
 
         with torch.inference_mode():
-            mask = self.gen_mask(mag_A, False).type_as(mag_A)
+            mask = self.gen_mask(mag_A, False)
 
             fake_B = self.gen_A2B(mag_A, mask).cpu()
             cycle_A = self.gen_B2A(fake_B, mask).cpu()
@@ -267,8 +267,8 @@ class MagnitudeAttentionGAN(L.LightningModule):
             fake_A = self.gen_B2A(input_B, mask).cpu()
             cycle_B = self.gen_A2B(fake_A, mask).cpu()
 
-        A = torch.cat([real_A, fake_A, cycle_A], dim=0)
-        B = torch.cat([real_B, fake_B, cycle_B], dim=0)
+        A = torch.cat([real_A.cpu(), fake_A, cycle_A], dim=0)
+        B = torch.cat([real_B.cpu(), fake_B, cycle_B], dim=0)
 
         grid_A = make_grid(A, nrow=3, padding=5)
         grid_B = make_grid(B, nrow=3, padding=5)
