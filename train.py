@@ -1,6 +1,6 @@
 import torch
 from data import SpeechDataModule
-from model import MagnitudeAttentionGAN
+from model import MagnitudeAttentionGAN, AttentionGuideGenerator
 import hydra
 from omegaconf import DictConfig, OmegaConf
 import lightning.pytorch as L
@@ -8,6 +8,7 @@ import lightning.pytorch as L
 
 @hydra.main(version_base=None, config_path="conf", config_name="default_attn_gan")
 def main(cfg: DictConfig):
+
     dm = SpeechDataModule(cfg.dm)
     model = MagnitudeAttentionGAN(cfg.model, istft_params=cfg.feature.istft_params)
 
