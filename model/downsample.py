@@ -26,7 +26,8 @@ class SimpleDownsample(nn.Module):
         paddings=[0, 1, 1],
         dilations=[1, 1, 1],
         norm_layer=nn.InstanceNorm2d,  # can be instance norm
-        activation=nn.SiLU**kwargs,  # can be relu
+        activation=nn.SiLU, # can be relu
+        **kwargs,  
     ):
         super().__init__()
         layers = []
