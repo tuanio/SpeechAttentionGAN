@@ -4,6 +4,7 @@ import lightning as L
 from torch import nn, Tensor
 import torchaudio.transforms as T
 from itertools import chain
+from functools import reduce
 from .generator import AttentionGuideGenerator
 from .discriminator import PatchGAN
 
@@ -45,7 +46,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
         return self.adv_loss(predict, label)
 
     def cal_accuracy(self, predict: Tensor, threshold: float = 0.5):
-        return (predict.sigmoid() >= threshold).sum() / torch.mul(*predict.size())
+        return (predict.sigmoid() >= threshold).sum() / reduce(lambda x, y: x*y, predict.size())
 
     def configure_optimizers(self):
         if self.hparams.cfg.optimizer.name == "adam":
