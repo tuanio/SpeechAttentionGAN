@@ -32,6 +32,15 @@ class SpeechDataset(Dataset):
         all_src_path = glob.glob(os.path.join(path, self.src_domain + os.sep + "*.pt"))
         all_tgt_path = glob.glob(os.path.join(path, self.tgt_domain + os.sep + "*.pt"))
 
+        if is_train:
+            self.src_pool = []
+            for f in tqdm(all_src_path, desc="Loading sources files..."):
+                self.src_pool.extend([i['data'] for i in torch.load(f)])
+            
+            self.tgt_pool = []
+            for f in tqdm(all_tgt_path, desc="Loading target files..."):
+                self.tgt_pool.extend([i['data'] for i in torch.load(f)])
+
         # if is_train or not is_train:
         #     pbar = tqdm(desc="Preparing for " + self.src_domain)
         #     self.src_pool = []
