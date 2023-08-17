@@ -40,7 +40,7 @@ class SpeechDataModule(L.LightningDataModule):
 
     def train_dataloader(self):
         return DataLoader(
-            dataset["train"],
+            self.datasets["train"],
             batch_size=self.hparams.dm_config.batch_size,
             shuflfe=True,
             num_workers=self.hparams.dm_config.num_workers,
@@ -51,7 +51,7 @@ class SpeechDataModule(L.LightningDataModule):
 
     def valid_dataloader(self):
         return DataLoader(
-            dataset["valid"],
+            self.datasets["valid"],
             batch_size=self.hparams.dm_config.batch_size,
             shuflfe=False,
             num_workers=self.hparams.dm_config.num_workers,
@@ -62,7 +62,7 @@ class SpeechDataModule(L.LightningDataModule):
 
     def test_dataloader(self):
         return DataLoader(
-            dataset["test"],
+            self.datasets["test"],
             batch_size=self.hparams.dm_config.batch_size,
             shuflfe=False,
             num_workers=self.hparams.dm_config.num_workers,
