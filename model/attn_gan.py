@@ -104,7 +104,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
                         0, max(1, sh[2] - self.hparams.cfg.mask.time_width)
                     )
                     w = np.random.randint(0, self.hparams.cfg.mask.time_width)
-                    input_spec[idx, :, y_left : y_left + w, :] = 0
+                    mask[idx, :, y_left : y_left + w, :] = 0
         return mask.type_as(image)
 
     def forward(self, x: Tensor, mask: Tensor):
