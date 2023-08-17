@@ -255,8 +255,8 @@ class MagnitudeAttentionGAN(L.LightningModule):
 
     def on_train_epoch_end(self):
         
-        mag_A = torch.stack([i[0] for i in self.training_output], dim=0).type_as(self.gen_A2B.model[0].weight)
-        mag_B = torch.stack([i[1] for i in self.training_output], dim=0).type_as(self.gen_A2B.model[0].weight)
+        mag_A = torch.stack([i[0] for i in self.training_output], dim=0).type_as(self.gen_A2B.downsample.model[0].weight)
+        mag_B = torch.stack([i[1] for i in self.training_output], dim=0).type_as(self.gen_A2B.downsample.model[0].weight)
 
         with torch.inference_mode():
             mask = self.gen_mask(mag_A, False).type_as(mag_A)
