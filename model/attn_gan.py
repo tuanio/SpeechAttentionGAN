@@ -5,6 +5,7 @@ from torch import nn, Tensor
 import torchaudio.transforms as T
 from itertools import chain
 from functools import reduce
+from torchvision.utils import make_grid
 from .generator import AttentionGuideGenerator
 from .discriminator import PatchGAN
 
@@ -37,6 +38,9 @@ class MagnitudeAttentionGAN(L.LightningModule):
         self.adv_loss = nn.BCEWithLogitsLoss()
 
         self.istft = T.InverseSpectrogram(**istft_params)
+
+        self.max_training_image_log = 5
+        self.training_output = []
 
     def cal_adv_loss(self, predict, is_real):
         if is_real:
@@ -169,7 +173,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
         self.log("cycle_loss_B", cycle_loss_B)
 
         self.manual_backward(g_loss)
-        if not grad_clip:
+        if grad_clip:
             self.clip_gradients(
                 optimizer_g, gradient_clip_val=grad_clip, gradient_clip_algorithm="norm"
             )
@@ -178,6 +182,10 @@ class MagnitudeAttentionGAN(L.LightningModule):
             scheduler_g.step()
         optimizer_g.zero_grad()
         self.untoggle_optimizer(optimizer_g)
+
+
+        if len(self.training_output) < self.max_training_image_log:
+            self.training_output.append((input_A, input_B))
 
         # log audio
 
@@ -233,7 +241,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
         self.log("d_B2_accuracy", self.cal_accuracy(d_B2_fake_inp))
 
         self.manual_backward(d_loss)
-        if not grad_clip:
+        if grad_clip:
             self.clip_gradients(
                 optimizer_g, gradient_clip_val=grad_clip, gradient_clip_algorithm="norm"
             )
@@ -245,4 +253,26 @@ class MagnitudeAttentionGAN(L.LightningModule):
         self.untoggle_optimizer(optimizer_d)
 
     def on_train_epoch_end(self):
-        pass
+        
+        mag_A = torch.stack([i[0] for i in self.training_output], dim=0)
+        mag_B = torch.stack([i[1] for i in self.training_output], dim=0)
+
+        with torch.inference_mode():
+            mask = self.gen_mask(mag_A, False)
+
+            fake_B = self.gen_A2B(mag_A, mask).cpu()
+            cycle_A = self.gen_B2A(fake_B, mask).cpu()
+
+            fake_A = self.gen_B2A(input_B, mask).cpu()
+            cycle_B = self.gen_A2B(fake_A, mask).cpu()
+
+        A = torch.cat([real_A, fake_A, cycle_A], dim=0)
+        B = torch.cat([real_B, fake_B, cycle_B], dim=0)
+
+        grid_A = make_grid(A, nrow=3, padding=5)
+        grid_B = make_grid(B, nrow=3, padding=5)
+
+        self.logger.log_image('clean_real_fake_cycle', [grid_A])
+        self.logger.log_image('noisy_real_fake_cycle', [grid_B])
+
+        self.training_output.clear()
