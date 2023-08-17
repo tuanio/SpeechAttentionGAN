@@ -22,7 +22,7 @@ class ResNetBottleNeck(nn.Module):
         kernel_size: int,
         stride: int,
         padding: int,
-        norm_layer=nn.BatchNorm2d,  # can be instance norm
+        norm_layer=nn.InstanceNorm2d,  # can be instance norm
     ):
         super().__init__()
         self.norm_layer = norm_layer
