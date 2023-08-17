@@ -27,7 +27,7 @@ feature:
 dm:
   root_path: /home/stud_vantuan/data/data_pickle_gan/helicopter_1h_30m
   split: [train, test, valid]
-  batch_size: 32
+  batch_size: 16
   num_workers: 4
   pin_memory: true
   persistent_workers: true
@@ -81,10 +81,10 @@ model:
     channel_expand: 2
     leakyrelu_slope: 0.2
   optimizer:
-    name: adam
+    name: adamw
     grad_clip: 0
     params_gen:
-      lr: 0.0002
+      lr: 0.0003
       betas: [0.5, 0.999]
       weight_decay: 0.0001
     params_disc:
@@ -102,7 +102,7 @@ model:
   mask: # set to zero to remove
     freq_masks: 0
     freq_width: 0
-    time_masks: 1
+    time_masks: 2
     time_width: 50
   weight:
     lambda_cycle_A: 10
@@ -121,6 +121,8 @@ trainer:
   max_epochs: 100
   log_every_n_steps: 10
   strategy: ddp_find_unused_parameters_true
+  precision: bf16-mixed
+
 
 exp:
   train: true
