@@ -17,7 +17,7 @@ def main(cfg: DictConfig):
 
     # print(o.shape)
 
-    torch.set_float32_matmul_precision("medium" | "high")
+    torch.set_float32_matmul_precision("medium") #  | "high"
 
     dm = SpeechDataModule(cfg.dm)
 
