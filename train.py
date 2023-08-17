@@ -9,7 +9,7 @@ import lightning.pytorch as L
 @hydra.main(version_base=None, config_path="conf", config_name="default_attn_gan")
 def main(cfg: DictConfig):
     dm = SpeechDataModule(cfg.dm)
-    model = MagnitudeAttentionGAN(cfg.model)
+    model = MagnitudeAttentionGAN(cfg.model, stft_params=cfg.feature.stft_params)
     logger = L.logger.wandb.WandbLogger(**cfg.logger.wandb)
     trainer = L.Trainer(logger=logger, **cfg.trainer)
 
