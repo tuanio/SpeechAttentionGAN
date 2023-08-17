@@ -261,14 +261,14 @@ class MagnitudeAttentionGAN(L.LightningModule):
         with torch.inference_mode():
             mask = self.gen_mask(mag_A, False)
 
-            fake_B = self.gen_A2B(mag_A, mask).cpu()
-            cycle_A = self.gen_B2A(fake_B, mask).cpu()
+            fake_B = self.gen_A2B(mag_A, mask)
+            cycle_A = self.gen_B2A(fake_B, mask)
 
-            fake_A = self.gen_B2A(input_B, mask).cpu()
-            cycle_B = self.gen_A2B(fake_A, mask).cpu()
+            fake_A = self.gen_B2A(input_B, mask)
+            cycle_B = self.gen_A2B(fake_A, mask)
 
-        A = torch.cat([real_A.cpu(), fake_A, cycle_A], dim=0)
-        B = torch.cat([real_B.cpu(), fake_B, cycle_B], dim=0)
+        A = torch.cat([real_A.cpu(), fake_A.cpu(), cycle_A.cpu()], dim=0)
+        B = torch.cat([real_B.cpu(), fake_B.cpu(), cycle_B.cpu()], dim=0)
 
         grid_A = make_grid(A, nrow=3, padding=5)
         grid_B = make_grid(B, nrow=3, padding=5)
