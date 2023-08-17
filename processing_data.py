@@ -77,9 +77,10 @@ def processing(pack, root_path, is_train):
 
     packs = [dict(magnitude=m, phase=p) for m, p in zip(mag_coms, phase_coms)]
     ret_data = {"data": packs, "max_size": mag_max_size, "path": path}
-    
-    name = path.rsplit(os.sep, 1)[-1].rsplit('.', 1)[0]
-    torch.save(ret_data, os.path.join(root_path, name + '.pt'))
+
+    name = path.rsplit(os.sep, 1)[-1].rsplit(".", 1)[0]
+    torch.save(ret_data, os.path.join(root_path, name + ".pt"))
+
 
 def main(args):
     data_path = os.path.join(args.path, args.split)
@@ -109,11 +110,22 @@ def main(args):
     log("process source")
     print(f"Processing for {args.src_domain}")
     with cf.ThreadPoolExecutor(max_workers=args.threads) as exe:
-        list(exe.map(partial(processing, root_path=src_save_path, is_train=is_train), enumerate(all_src_audio_path)))
+        list(
+            exe.map(
+                partial(processing, root_path=src_save_path, is_train=is_train),
+                enumerate(all_src_audio_path),
+            )
+        )
 
     print(f"Processing for {args.tgt_domain}")
     with cf.ThreadPoolExecutor(max_workers=args.threads) as exe:
-        list(exe.map(partial(processing, root_path=tgt_save_path, is_train=is_train), enumerate(all_tgt_audio_path)))
+        list(
+            exe.map(
+                partial(processing, root_path=tgt_save_path, is_train=is_train),
+                enumerate(all_tgt_audio_path),
+            )
+        )
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

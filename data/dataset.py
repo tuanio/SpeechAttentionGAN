@@ -28,26 +28,26 @@ class SpeechDataset(Dataset):
         self.src_domain = src_domain
         self.tgt_domain = domains[0] if src_domain == domains[1] else domains[1]
 
-        src_data = torch.load(os.path.join(path, self.src_domain + pickle_ext))
-        tgt_data = torch.load(os.path.join(path, self.tgt_domain + pickle_ext))
+        all_src_path = glob.glob(os.path.join(path, self.src_domain + os.sep + "*.pt"))
+        all_tgt_path = glob.glob(os.path.join(path, self.tgt_domain + os.sep + "*.pt"))
 
-        if is_train or not is_train:
-            pbar = tqdm(desc="Preparing for " + self.src_domain)
-            self.src_pool = []
-            for i in src_data:
-                for mag_and_phase in i["data"]:
-                    self.src_pool.append(mag_and_phase)
-                    pbar.update(1)
+        # if is_train or not is_train:
+        #     pbar = tqdm(desc="Preparing for " + self.src_domain)
+        #     self.src_pool = []
+        #     for i in src_data:
+        #         for mag_and_phase in i["data"]:
+        #             self.src_pool.append(mag_and_phase)
+        #             pbar.update(1)
 
-            pbar = tqdm(desc="Preparing for " + self.tgt_domain)
-            self.tgt_pool = []
-            for i in tgt_data:
-                for mag_and_phase in i["data"]:
-                    self.tgt_pool.append(mag_and_phase)
-                    pbar.update(1)
-        else:
-            # for testing, but currently train only
-            pass
+        #     pbar = tqdm(desc="Preparing for " + self.tgt_domain)
+        #     self.tgt_pool = []
+        #     for i in tgt_data:
+        #         for mag_and_phase in i["data"]:
+        #             self.tgt_pool.append(mag_and_phase)
+        #             pbar.update(1)
+        # else:
+        #     # for testing, but currently train only
+        #     pass
 
         # normalize to range [-1, 1] to map with tanh activation in gan
         self.transforms = TVT.Compose([TVT.Normalize(mean=(0.5), std=(0.5))])
@@ -58,9 +58,12 @@ class SpeechDataset(Dataset):
     def __getitem__(self, idx):
         # return magnitude_A (input_A), magnitude_B (input_B), phase_A (input_phase_A), phase_B (input_phase_B)
         # fix select by index
-        src_audio = self.src_pool[idx]
+        src_file = self.src_pool[idx]
         # randomly choice tgt domain
-        tgt_audio = random.choice(self.tgt_pool)
+        tgt_file = random.choice(self.tgt_pool)
+
+        src_audio = torch.load(src_file)
+        tgt_file = torch.load(tgt_file)
 
         magnitude_A = self.transforms(src_audio["magnitude"])
         phase_A = self.transforms(src_audio["phase"])
