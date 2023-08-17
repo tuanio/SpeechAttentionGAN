@@ -1,5 +1,5 @@
-from torch import Tensor
 import lightning as L
+from torch import nn, Tensor
 import torchaudio.transforms as T
 from itertools import chain
 from .generator import AttentionGuideGenerator
