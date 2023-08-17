@@ -144,8 +144,8 @@ class MagnitudeAttentionGAN(L.LightningModule):
         adv_2_loss = self.cal_adv_loss(self.disc_B2(cycle_B), True) + self.cal_adv_loss(
             self.disc_A2(cycle_A), True
         )
-        idt_loss_A = self.idt_loss(self.gen_B2A(input_A), input_A) * lambda_idt
-        idt_loss_B = self.idt_loss(self.gen_A2B(input_B), input_B) * lambda_idt
+        idt_loss_A = self.idt_loss(self.gen_B2A(input_A, self.gen_mask(input_A, False)), input_A) * lambda_idt
+        idt_loss_B = self.idt_loss(self.gen_A2B(input_B, self.gen_mask(input_B, False)), input_B) * lambda_idt
 
         cycle_loss_A = self.cycle_loss(cycle_A, input_A) * lambda_cycle_A
         cycle_loss_B = self.cycle_loss(cycle_B, input_B) * lambda_cycle_B
