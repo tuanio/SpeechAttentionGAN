@@ -19,17 +19,12 @@ class MagnitudeAttentionGAN(L.LightningModule):
         self.save_hyperparameters()
         self.automatic_optimization = False
 
-        self.define_generators()
-        self.define_discriminators()
-        self.define_loss()
-
         self.istft = T.InverseSpectrogram(**istft_params)
 
-    def define_generators(self):
+    def setup(self):
         self.gen_A2B = AttentionGuideGenerator(**self.hparams.cfg.generator)
         self.gen_B2A = AttentionGuideGenerator(**self.hparams.cfg.generator)
 
-    def define_discriminators(self):
         # first adversarial loss
         self.disc_A = PatchGAN(**self.hparams.cfg.discriminator)
         self.disc_B = PatchGAN(**self.hparams.cfg.discriminator)
@@ -38,7 +33,6 @@ class MagnitudeAttentionGAN(L.LightningModule):
         self.disc_A2 = PatchGAN(**self.hparams.cfg.discriminator)
         self.disc_B2 = PatchGAN(**self.hparams.cfg.discriminator)
 
-    def define_loss(self):
         self.idt_loss = nn.L1Loss()
         self.cycle_loss = nn.L1Loss()
         self.adv_loss = nn.BCEWithLogitsLoss()
