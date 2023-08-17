@@ -22,13 +22,20 @@ class ResNetBottleNeck(nn.Module):
         kernel_size: int,
         stride: int,
         padding: int,
+        norm_layer=nn.BatchNorm2d,  # can be instance norm
     ):
         super().__init__()
         layers = []
         for _ in range(n_blocks):
             layers.extend(self.create_block(in_channels, kernel_size, stride, padding))
         self.out_dim = in_channels
+        self.norm_layer = norm_layer
         self.model = nn.Sequential(*layers)
+
+        for m in self._modules:
+            if isinstance(m, nn.Conv2d):
+                m.weight.data.normal_(0, 0.02)
+                m.bias.data.zero_()
 
     def create_block(self, in_channels, kernel_size, stride, padding):
         # padding reflect to prevent checkboard artifacts
@@ -41,7 +48,7 @@ class ResNetBottleNeck(nn.Module):
                 padding,
                 padding_mode="reflect",
             ),
-            nn.InstanceNorm2d(in_channels),
+            self.norm_layer(in_channels),
             nn.ReLU(),
             nn.Conv2d(
                 in_channels,
@@ -51,11 +58,11 @@ class ResNetBottleNeck(nn.Module):
                 padding,
                 padding_mode="reflect",
             ),
-            nn.InstanceNorm2d(in_channels),
+            self.norm_layer(in_channels),
         ]
 
     def forward(self, x: Tensor):
-        return self.model(x)
+        return x + self.model(x)
 
 
 register_bottle_neck("resnet", ResNetBottleNeck)

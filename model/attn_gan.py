@@ -10,6 +10,7 @@ from .generator import AttentionGuideGenerator
 from .discriminator import PatchGAN
 import librosa
 
+FIX_W = 128
 
 class MagnitudeAttentionGAN(L.LightningModule):
     """
@@ -18,7 +19,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
     # this class work for magnitude only
     """
 
-    def __init__(self, cfg, istft_params: dict):
+    def __init__(self, cfg, total_steps: int = 0, istft_params: dict = {}):
         super().__init__()
         self.save_hyperparameters()
         self.automatic_optimization = False
@@ -38,10 +39,32 @@ class MagnitudeAttentionGAN(L.LightningModule):
         self.cycle_loss = nn.L1Loss()
         self.adv_loss = nn.BCEWithLogitsLoss()
 
+        self.stft = T.Spectrogram(**istft_params, power=None)
         self.istft = T.InverseSpectrogram(**istft_params)
 
-        self.max_training_image_log = 5
-        self.training_output = []
+        custom_src_audio_path = '/home/stud_vantuan/share_with_150/cache/helicopter_1h_30m/test/clean/5514-19192-0038.flac'
+        wav, sr = torchaudio.load(custom_src_audio_path)
+        spectrogram = self.stft(wav)
+        magnitude = torch.abs(spectrogram)
+        self.phase = torch.angle(spectrogram)
+        self.mag_coms, self.max_size = torch.stack(self.cutting(magnitude), dim=0)
+        self.sr = sr
+
+    def cutting(self, img, fix_w: int = FIX_W):
+        max_size = img.size(-1)
+        l = []
+        curr_idx = 0
+        while img.size(-1) - curr_idx > fix_w:
+            l.append(img[:, :, curr_idx : curr_idx + fix_w])
+            curr_idx += fix_w
+        remain = max_size - curr_idx
+        if remain:
+            add = fix_w - remain
+            roll_img = torch.tile(img, (math.ceil(add / fix_w),))
+            remain_tensor = img[:, :, curr_idx:]
+            add_on_tensor = roll_img[:, :, :add]
+            l.append(torch.cat([remain_tensor, add_on_tensor], dim=-1))
+        return l, max_size
 
     def cal_adv_loss(self, predict, is_real):
         if is_real:
@@ -79,7 +102,9 @@ class MagnitudeAttentionGAN(L.LightningModule):
         if scheduler_class != None:
             scheduler_g = {
                 "scheduler": scheduler_class(
-                    optim_g, **self.hparams.cfg.scheduler.params
+                    optim_g,
+                    total_steps=self.hparams.total_steps,
+                    **self.hparams.cfg.scheduler.params
                 ),
                 "interval": "step",  # or 'epoch'
                 "frequency": 1,
@@ -87,7 +112,9 @@ class MagnitudeAttentionGAN(L.LightningModule):
 
             scheduler_d = {
                 "scheduler": scheduler_class(
-                    optim_g, **self.hparams.cfg.scheduler.params
+                    optim_d,
+                    total_steps=self.hparams.total_steps,
+                    **self.hparams.cfg.scheduler.params
                 ),
                 "interval": "step",  # or 'epoch'
                 "frequency": 1,
@@ -262,42 +289,58 @@ class MagnitudeAttentionGAN(L.LightningModule):
         self.untoggle_optimizer(optimizer_d)
 
     def on_train_epoch_end(self):
-        mag_A = torch.stack([i[0] for i in self.training_output], dim=0).type_as(
-            self.gen_A2B.downsample.model[0].weight
-        )
-        mag_B = torch.stack([i[1] for i in self.training_output], dim=0).type_as(
-            self.gen_A2B.downsample.model[0].weight
-        )
-
         with torch.inference_mode():
-            mask = self.gen_mask(mag_A, False)
+            mag_coms = self.mag_coms.type_as(self.gen_A2B.downsample.model[0].weight)
+            fake_magnitude_B = self.gen_A2B(mag_coms, self.gen_mask(mag_coms, False)).cpu()
+            mags = torch.cat([i for i in fake_magnitude_B], dim=2)[:, :, :self.max_size - FIX_W]
 
-            fake_B = self.gen_A2B(mag_A, mask)
-            cycle_A = self.gen_B2A(fake_B, mask)
+            wav = mags + np.exp(self.phase * 1j)
+            data = [[wandb.Audio(wav.numpy(), sample_rate=self.sr)]]
+            self.logger.log_table(key='generated_audio', columns=['Generated_Audio'], data=data)
 
-            fake_A = self.gen_B2A(mag_B, mask)
-            cycle_B = self.gen_A2B(fake_A, mask)
+    # def on_train_epoch_end(self):
+    #     mag_A = torch.stack([i[0] for i in self.training_output], dim=0).type_as(
+    #         self.gen_A2B.downsample.model[0].weight
+    #     )
+    #     mag_B = torch.stack([i[1] for i in self.training_output], dim=0).type_as(
+    #         self.gen_A2B.downsample.model[0].weight
+    #     )
 
-        def normalize(x):
-            mn = x.min()
-            mx = x.max()
-            return (x + 1) * 0.5 - (mx - mn) + mn
+    #     with torch.inference_mode():
+    #         mask = self.gen_mask(mag_A, False)
 
-        mag_A, fake_A, cycle_A, mag_B, fake_B, cycle_B = list(
-            map(lambda x: normalize(x.cpu()), [mag_A, fake_A, cycle_A, mag_B, fake_B, cycle_B])
-        )
+    #         fake_B = self.gen_A2B(mag_A, mask)
+    #         cycle_A = self.gen_B2A(fake_B, mask)
 
-        mag_A, fake_A, cycle_A, mag_B, fake_B, cycle_B = list(
-            map(lambda x: torch.from_numpy(librosa.amplitude_to_db(x.numpy())), [mag_A, fake_A, cycle_A, mag_B, fake_B, cycle_B])
-        )
+    #         fake_A = self.gen_B2A(mag_B, mask)
+    #         cycle_B = self.gen_A2B(fake_A, mask)
 
-        A = torch.cat([mag_A, fake_A, cycle_A], dim=0)
-        B = torch.cat([mag_B, fake_B, cycle_B], dim=0)
+    #     def normalize(x):
+    #         mn = x.min()
+    #         mx = x.max()
+    #         return (x + 1) * 0.5 - (mx - mn) + mn
 
-        grid_A = make_grid(A, nrow=mag_A.size(0), padding=5)
-        grid_B = make_grid(B, nrow=mag_A.size(0), padding=5)
+    #     mag_A, fake_A, cycle_A, mag_B, fake_B, cycle_B = list(
+    #         map(
+    #             lambda x: normalize(x.cpu()),
+    #             [mag_A, fake_A, cycle_A, mag_B, fake_B, cycle_B],
+    #         )
+    #     )
 
-        self.logger.log_image("clean_real_fake_cycle", [grid_A])
-        self.logger.log_image("noisy_real_fake_cycle", [grid_B])
+    #     mag_A, fake_A, cycle_A, mag_B, fake_B, cycle_B = list(
+    #         map(
+    #             lambda x: torch.from_numpy(librosa.amplitude_to_db(x.numpy())),
+    #             [mag_A, fake_A, cycle_A, mag_B, fake_B, cycle_B],
+    #         )
+    #     )
 
-        self.training_output.clear()
+    #     A = torch.cat([mag_A, fake_A, cycle_A], dim=0)
+    #     B = torch.cat([mag_B, fake_B, cycle_B], dim=0)
+
+    #     grid_A = make_grid(A, nrow=mag_A.size(0), padding=5)
+    #     grid_B = make_grid(B, nrow=mag_A.size(0), padding=5)
+
+    #     self.logger.log_image("clean_real_fake_cycle", [grid_A])
+    #     self.logger.log_image("noisy_real_fake_cycle", [grid_B])
+
+    #     self.training_output.clear()

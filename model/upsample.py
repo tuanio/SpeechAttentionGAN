@@ -70,6 +70,11 @@ class SimpleUpsample(nn.Module):
 
         self.model = nn.Sequential(*layers)
 
+        for m in self._modules:
+            if isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
+                m.weight.data.normal_(0, 0.02)
+                m.bias.data.zero_()
+
     def create_block(
         self,
         in_channels,
