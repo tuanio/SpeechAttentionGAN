@@ -19,9 +19,6 @@ class MagnitudeAttentionGAN(L.LightningModule):
         self.save_hyperparameters()
         self.automatic_optimization = False
 
-        self.istft = T.InverseSpectrogram(**istft_params)
-
-    def setup(self, stage=None):
         self.gen_A2B = AttentionGuideGenerator(**self.hparams.cfg.generator)
         self.gen_B2A = AttentionGuideGenerator(**self.hparams.cfg.generator)
 
@@ -36,6 +33,8 @@ class MagnitudeAttentionGAN(L.LightningModule):
         self.idt_loss = nn.L1Loss()
         self.cycle_loss = nn.L1Loss()
         self.adv_loss = nn.BCEWithLogitsLoss()
+
+        self.istft = T.InverseSpectrogram(**istft_params)
 
     def cal_adv_loss(self, predict, is_real):
         if is_real:
