@@ -2,6 +2,7 @@ import torch
 import numpy as np
 import lightning as L
 from torch import nn, Tensor
+import torchaudio
 import torchaudio.transforms as T
 from itertools import chain
 from functools import reduce
