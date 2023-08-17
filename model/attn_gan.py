@@ -286,9 +286,9 @@ class MagnitudeAttentionGAN(L.LightningModule):
             map(lambda x: normalize(x.cpu()), [mag_A, fake_A, cycle_A, mag_B, fake_B, cycle_B])
         )
 
-        # mag_A, fake_A, cycle_A, mag_B, fake_B, cycle_B = list(
-        #     map(lambda x: 10*x.log10(), [mag_A, fake_A, cycle_A, mag_B, fake_B, cycle_B])
-        # )
+        mag_A, fake_A, cycle_A, mag_B, fake_B, cycle_B = list(
+            map(lambda x: librosa.power_to_db(x.numpy()), [mag_A, fake_A, cycle_A, mag_B, fake_B, cycle_B])
+        )
 
         A = torch.cat([mag_A, fake_A, cycle_A], dim=0)
         B = torch.cat([mag_B, fake_B, cycle_B], dim=0)
