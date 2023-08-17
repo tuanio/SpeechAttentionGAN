@@ -134,7 +134,7 @@ if __name__ == "__main__":
         "--stage", type=str, default="train"
     )  # create for train, test, predict
     parser.add_argument(
-        "--threads", type=str, default=8
+        "--threads", type=int, default=8
     )  # create for train, test, predict
     args = parser.parse_args()
 
