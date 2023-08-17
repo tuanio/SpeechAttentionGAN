@@ -28,46 +28,46 @@ from torch.utils.data import DataLoader
 
 
 class SpeechDataModule(L.LightningDataModule):
-    def __init__(self, cfg):
+    def __init__(self, dm_config):
         super().__init__()
         self.save_hyperparameters()
         datasets = {}
-        for split in cfg.split:
+        for split in dm_config.split:
             datasets[split] = SpeechDataset(
-                path=os.path.join(cfg.root_path, split),
-                **cfg.dataset,
+                path=os.path.join(dm_config.root_path, split),
+                **dm_config.dataset,
             )
 
     def train_dataloader(self):
         return DataLoader(
             dataset["train"],
-            batch_size=self.hparams.cfg.batch_size,
+            batch_size=self.hparams.dm_config.batch_size,
             shuflfe=True,
-            num_workers=self.hparams.cfg.num_workers,
-            pin_memory=self.hparams.cfg.pin_memory,
-            persistent_workers=self.hparams.cfg.persistent_workers,
+            num_workers=self.hparams.dm_config.num_workers,
+            pin_memory=self.hparams.dm_config.pin_memory,
+            persistent_workers=self.hparams.dm_config.persistent_workers,
             # collate_fn=self.collate_fn,
         )
 
     def valid_dataloader(self):
         return DataLoader(
             dataset["valid"],
-            batch_size=self.hparams.cfg.batch_size,
+            batch_size=self.hparams.dm_config.batch_size,
             shuflfe=False,
-            num_workers=self.hparams.cfg.num_workers,
-            pin_memory=self.hparams.cfg.pin_memory,
-            persistent_workers=self.hparams.cfg.persistent_workers,
+            num_workers=self.hparams.dm_config.num_workers,
+            pin_memory=self.hparams.dm_config.pin_memory,
+            persistent_workers=self.hparams.dm_config.persistent_workers,
             # collate_fn=self.collate_fn,
         )
 
     def test_dataloader(self):
         return DataLoader(
             dataset["test"],
-            batch_size=self.hparams.cfg.batch_size,
+            batch_size=self.hparams.dm_config.batch_size,
             shuflfe=False,
-            num_workers=self.hparams.cfg.num_workers,
-            pin_memory=self.hparams.cfg.pin_memory,
-            persistent_workers=self.hparams.cfg.persistent_workers,
+            num_workers=self.hparams.dm_config.num_workers,
+            pin_memory=self.hparams.dm_config.pin_memory,
+            persistent_workers=self.hparams.dm_config.persistent_workers,
             # collate_fn=self.collate_fn,
         )
 
