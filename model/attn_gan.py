@@ -8,6 +8,7 @@ from functools import reduce
 from torchvision.utils import make_grid
 from .generator import AttentionGuideGenerator
 from .discriminator import PatchGAN
+import librosa
 
 
 class MagnitudeAttentionGAN(L.LightningModule):
@@ -287,7 +288,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
         )
 
         mag_A, fake_A, cycle_A, mag_B, fake_B, cycle_B = list(
-            map(lambda x: librosa.power_to_db(x.numpy()), [mag_A, fake_A, cycle_A, mag_B, fake_B, cycle_B])
+            map(lambda x: torch.from_numpy(librosa.power_to_db(x.numpy())), [mag_A, fake_A, cycle_A, mag_B, fake_B, cycle_B])
         )
 
         A = torch.cat([mag_A, fake_A, cycle_A], dim=0)
