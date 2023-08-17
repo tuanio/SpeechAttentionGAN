@@ -126,7 +126,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
             scheduler_g, scheduler_d = self.lr_schedulers()
             
         lambda_idt = self.hparams.cfg.weight.lambda_idt
-        lambda_cycle_B = self.hparams.cfg.weight.lambda_cycle_A
+        lambda_cycle_A = self.hparams.cfg.weight.lambda_cycle_A
         lambda_cycle_B = self.hparams.cfg.weight.lambda_cycle_B
 
         # generator
