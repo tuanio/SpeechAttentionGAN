@@ -56,7 +56,7 @@ def cutting(img, is_train: bool = True, fix_w: int = FIX_W):
 def getting_all_audio(path):
     data = []
     for ext in audio_ext:
-        data.extend(glob.glob(src_data_path + "/*." + ext))
+        data.extend(glob.glob(path + "/*." + ext))
     return data
 
 
