@@ -54,7 +54,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
         self.mag_coms = torch.stack(self.mag_coms, dim=0)
         self.sr = sr
 
-        print("Device:", self.istft.device, self.phase.device, self.mag_coms.device)
+        self.plot_wav()
 
     def cutting(self, img, fix_w: int = FIX_W):
         max_size = img.size(-1)
@@ -288,7 +288,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
 
         self.untoggle_optimizer(optimizer_d)
 
-    def on_train_epoch_end(self):
+    def plot_wav(self):
         with torch.inference_mode():
             mag_coms = self.mag_coms.type_as(self.gen_A2B.downsample.model[0].weight)
             fake_magnitude_B = self.gen_A2B(mag_coms, self.gen_mask(mag_coms, False))
@@ -297,6 +297,9 @@ class MagnitudeAttentionGAN(L.LightningModule):
             wav = self.istft(mags + torch.exp(self.phase * 1j))
             data = [[wandb.Audio(wav.numpy(), sample_rate=self.sr)]]
             self.logger.log_table(key='generated_audio', columns=['Generated_Audio'], data=data)
+
+    def on_train_epoch_end(self):
+        self.plot_wav()
 
     # def on_train_epoch_end(self):
     #     mag_A = torch.stack([i[0] for i in self.training_output], dim=0).type_as(
