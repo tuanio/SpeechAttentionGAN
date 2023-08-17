@@ -185,7 +185,8 @@ class MagnitudeAttentionGAN(L.LightningModule):
 
 
         if len(self.training_output) < self.max_training_image_log:
-            self.training_output.append((input_A, input_B))
+            # just get first 
+            self.training_output.append((input_A[0], input_B[0]))
 
         # log audio
 
