@@ -17,11 +17,11 @@ def main(cfg: DictConfig):
     
     trainer = L.Trainer(logger=logger, **cfg.trainer)
 
-    if cfg.stage.train:
+    if cfg.exp.train:
         print("Start training...")
         trainer.fit(model, datamodule=dm)
 
-    if cfg.stage.test:
+    if cfg.exp.test:
         print("Start testing...")
         trainer.test(model, datamodule=dm)
 

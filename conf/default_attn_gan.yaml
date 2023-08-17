@@ -106,7 +106,7 @@ trainer:
   devices: 4
   max_epochs: 50
 
-stage:
+exp:
   train: true
   test: false
   predict: false
