@@ -50,7 +50,8 @@ class MagnitudeAttentionGAN(L.LightningModule):
         spectrogram = self.stft(wav)
         magnitude = torch.abs(spectrogram)
         self.phase = torch.angle(spectrogram)
-        self.mag_coms, self.max_size = torch.stack(self.cutting(magnitude), dim=0)
+        self.mag_coms, self.max_size = self.cutting(magnitude)
+        self.mag_coms = torch.stack(self.mag_coms, dim=0)
         self.sr = sr
 
     def cutting(self, img, fix_w: int = FIX_W):
