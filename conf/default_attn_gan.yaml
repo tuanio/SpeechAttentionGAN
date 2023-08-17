@@ -28,6 +28,9 @@ dm:
   root_path: /home/stud_vantuan/data/data_pickle_gan/helicopter_1h_30m
   split: [train, test, valid]
   batch_size: 32
+  num_workers: 8
+  pin_memory: true
+  persistent_workers: true
   dataset:
     domains: [clean, noisy]
     src_domain: clean
