@@ -32,6 +32,8 @@ audio_ext = ["flac", "wav", "mp3"]
 stft = T.Spectrogram(**PARAMS, power=None)
 # istft = T.InverseSpectrogram(**PARAMS)
 
+def log(text):
+    os.system(f'echo {text} >> temp_log.txt')
 
 def cutting(img, is_train: bool = True, fix_w: int = FIX_W):
     max_size = img.size(-1)
@@ -57,7 +59,9 @@ def getting_all_audio(path):
     return data
 
 
-def processing(path, is_train):
+def processing(pack, is_train):
+    idx, path = pack
+    log(idx)
     wav, sr = torchaudio.load(path)
     spectrogram = stft(wav)
     magnitude = torch.abs(spectrogram)
@@ -96,22 +100,25 @@ def main(args):
     if not os.path.exists(tgt_save_path):
         os.system("mkdir -p " + tgt_save_path)
 
+    log('process source')
     print(f"Processing for {args.src_domain}")
     with cf.ThreadPoolExecutor(max_workers=args.threads) as exe:
         src_data = list(
-            exe.map(partial(processing, is_train=is_train), all_src_audio_path)
+            exe.map(partial(processing, is_train=is_train), enumerate(all_src_audio_path))
         )
     print(f"Saving {args.src_domain} data.")
     torch.save(src_data, src_save_path)
+    log('saved source')
 
+    log('process target')
     print(f"Processing for {args.tgt_domain}")
     with cf.ThreadPoolExecutor(max_workers=args.threads) as exe:
         tgt_data = list(
-            exe.map(partial(processing, is_train=is_train), all_tgt_audio_path)
+            exe.map(partial(processing, is_train=is_train), enumerate(all_tgt_audio_path))
         )
     print(f"Saving {args.tgt_domain} data.")
     torch.save(tgt_data, tgt_save_path)
-
+    log('saved target')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
