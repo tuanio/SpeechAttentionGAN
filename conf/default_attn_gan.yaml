@@ -21,12 +21,12 @@ feature:
     power: null
 
 dm:
-  root_path: /home/stud_vantuan/helicopter
+  root_path: /home/stud_vantuan/data/data_pickle_gan/helicopter_1h_30m
   split: [train, test, valid]
   dataset:
     domains: [clean, noisy]
     src_domain: clean
-    img_size: [128, 128]
+    img_size: [129, 128]
 
 model:
   generator:
@@ -91,8 +91,8 @@ model:
     lambda_idt: 1
 
 logger:
-  project: attn_gan
-  name: attn_gan_1
+  project: speech_attn_gan_helicopter
+  name: speech_attn_gan_1
 
 trainer:
   devices: 4
@@ -100,5 +100,5 @@ trainer:
 
 stage:
   train: true
-  test: true
-  predict: true
+  test: false
+  predict: false

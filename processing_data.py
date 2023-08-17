@@ -35,8 +35,10 @@ audio_ext = ["flac", "wav", "mp3"]
 stft = T.Spectrogram(**PARAMS, power=None)
 # istft = T.InverseSpectrogram(**PARAMS)
 
+
 def log(text):
-    os.system(f'echo {text} >> temp_log.txt')
+    os.system(f"echo {text} >> temp_log.txt")
+
 
 def cutting(img, is_train: bool = True, fix_w: int = FIX_W):
     max_size = img.size(-1)
@@ -93,32 +95,37 @@ def main(args):
 
     is_train = args.stage == "train"
 
-    root_save_path = os.path.join(args.dest_path, args.stage)
-    src_save_path = os.path.join(root_save_path, args.src_domain + '.pt')
-    tgt_save_path = os.path.join(root_save_path, args.tgt_domain + '.pt')
+    root_save_path = os.path.join(args.dest_path, args.split)
+    src_save_path = os.path.join(root_save_path, args.src_domain + ".pt")
+    tgt_save_path = os.path.join(root_save_path, args.tgt_domain + ".pt")
 
     if not os.path.exists(root_save_path):
         os.system("mkdir -p " + root_save_path)
 
-    log('process source')
+    log("process source")
     print(f"Processing for {args.src_domain}")
     with cf.ThreadPoolExecutor(max_workers=args.threads) as exe:
         src_data = list(
-            exe.map(partial(processing, is_train=is_train), enumerate(all_src_audio_path))
+            exe.map(
+                partial(processing, is_train=is_train), enumerate(all_src_audio_path)
+            )
         )
     print(f"Saving {args.src_domain} data.")
     torch.save(src_data, src_save_path)
-    log('saved source')
+    log("saved source")
 
-    log('process target')
+    log("process target")
     print(f"Processing for {args.tgt_domain}")
     with cf.ThreadPoolExecutor(max_workers=args.threads) as exe:
         tgt_data = list(
-            exe.map(partial(processing, is_train=is_train), enumerate(all_tgt_audio_path))
+            exe.map(
+                partial(processing, is_train=is_train), enumerate(all_tgt_audio_path)
+            )
         )
     print(f"Saving {args.tgt_domain} data.")
     torch.save(tgt_data, tgt_save_path)
-    log('saved target')
+    log("saved target")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

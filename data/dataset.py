@@ -7,58 +7,56 @@ from typing import List
 from collections import defaultdict
 from torch.utils.data import Dataset
 
+pickle_ext = ".pt"
 audio_exts = ["wav", "flac", "mp3"]
 
 
 # not resizing the image, but work with (129, 128)
 class SpeechDataset(Dataset):
+    '''
+        this one work for 
+    '''
     def __init__(
-        self, path: str, domains: List[str], src_domain: str, stft_params: dict
+        self, path: str, domains: List[str], src_domain: str, is_train: bool = True
     ):
         super().__init__()
 
-        self.data_pool = defaultdict[list]
-        for domain in domains:
-            self.data_pool[domain] = self.get_all_audio_paths(
-                os.path.join(path, domain)
-            )
         self.domains = domains
         self.src_domain = src_domain
         self.tgt_domain = domains[0] if src_domain == domains[1] else domains[1]
-        self.stft_params = stft_params
-        self.stft = T.Spectrogram(power=None, **stft_params)
 
-    def get_all_audio_paths(self, path):
-        datasets = []
-        for ext in audio_exts:
-            datasets.extend(glob.glob(path + os.sep + "*." + ext))
+        src_data = torch.load(os.path.join(path, self.src_domain + pickle_ext))
+        tgt_data = torch.load(os.path.join(path, self.tgt_domain + pickle_ext))
 
-    def extract_magphase(self, wav):
-        spectrogram = self.stft(wav)
-        magnitude = torch.abs(spectrogram)
-        phase = torch.angle(spectrogram)
-        return magnitude, phase
+        if is_train or not is_train:
+            self.src_pool = [
+                mag_and_phase for i in src_data for mag_and_phase in i["data"]
+            ]
+            self.tgt_pool = [
+                mag_and_phase for i in tgt_data for mag_and_phase in i["data"]
+            ]
+        else:
+            # for testing, but currently train only
+            pass
+
+        # normalize to range [-1, 1] to map with tanh activation in gan
+        self.transforms = T.Compose([T.Normalize(mean=(0.5), std=(0.5))])
 
     def __len__(self):
-        return len(self.data_pool[self.src_domain])
+        return len(self.src_pool)
 
     def __getitem__(self, idx):
         # return magnitude_A (input_A), magnitude_B (input_B), phase_A (input_phase_A), phase_B (input_phase_B)
         # fix select by index
-        src_audio = self.data_pool[self.src_domain][idx]
+        src_audio = self.src_pool[idx]
         # randomly choice tgt domain
-        tgt_audio = random.choice(self.data_pool[self.tgt_domain])
+        tgt_audio = random.choice(self.tgt_data)
 
-        wav_src, sr_src = torchaudio.load(src_audio)
-        wav_tgt, sr_tgt = torchaudio.load(tgt_audio)
+        magnitude_A = self.transforms(src_audio["magnitude"])
+        phase_A = self.transforms(src_audio["phase"])
 
-        magnitude_A, phase_A = self.extract_magphase(wav_src)
-        magnitude_B, phase_B = self.extract_magphase(wav_tgt)
-
-        list_mag_A, mag_A_max_size = cutting(magnitude_A)
-        list_phase_A, phase_A_max_size = cutting(phase_A)
-        list_mag_B, mag_B_max_size = cutting(magnitude_B)
-        list_phase_B, phase_B_max_size = cutting(phase_B)
+        magnitude_B = self.transforms(tgt_audio["magnitude"])
+        phase_A = self.transforms(tgt_audio["phase"])
 
         # every feature have shape (1, n_fft // 2 + 1, seq_len)
 

@@ -28,14 +28,13 @@ from torch.utils.data import DataLoader
 
 
 class SpeechDataModule(L.LightningDataModule):
-    def __init__(self, cfg, stft_params):
+    def __init__(self, cfg):
         super().__init__()
         self.save_hyperparameters()
         datasets = {}
         for split in cfg.split:
             datasets[split] = SpeechDataset(
                 path=os.path.join(cfg.path, split),
-                stft_params=stft_params,
                 **cfg.dataset,
             )
 
@@ -47,35 +46,35 @@ class SpeechDataModule(L.LightningDataModule):
             num_workers=self.hparams.cfg.num_workers,
             pin_memory=self.hparams.cfg.pin_memory,
             persistent_workers=self.hparams.cfg.persistent_workers,
-            collate_fn=self.collate_fn,
+            # collate_fn=self.collate_fn,
         )
 
     def valid_dataloader(self):
         return DataLoader(
             dataset["valid"],
             batch_size=self.hparams.cfg.batch_siz,
-            shuflfe=True,
+            shuflfe=False,
             num_workers=self.hparams.cfg.num_workers,
             pin_memory=self.hparams.cfg.pin_memory,
             persistent_workers=self.hparams.cfg.persistent_workers,
-            collate_fn=self.collate_fn,
+            # collate_fn=self.collate_fn,
         )
 
     def test_dataloader(self):
         return DataLoader(
             dataset["test"],
             batch_size=self.hparams.cfg.batch_siz,
-            shuflfe=True,
+            shuflfe=False,
             num_workers=self.hparams.cfg.num_workers,
             pin_memory=self.hparams.cfg.pin_memory,
             persistent_workers=self.hparams.cfg.persistent_workers,
-            collate_fn=self.collate_fn,
+            # collate_fn=self.collate_fn,
         )
 
-    def collate_fn(self, batch):
-        n_features = len(batch)
-        data = []
-        length = []
-        for i in batch:
-            datum = [j for j in i]
-            length.append([])
+    # def collate_fn(self, batch):
+    #     n_features = len(batch)
+    #     data = []
+    #     length = []
+    #     for i in batch:
+    #         datum = [j for j in i]
+    #         length.append([])
