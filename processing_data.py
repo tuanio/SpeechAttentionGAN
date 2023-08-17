@@ -97,11 +97,8 @@ def main(args):
     src_save_path = os.path.join(root_save_path, args.src_domain + '.pt')
     tgt_save_path = os.path.join(root_save_path, args.tgt_domain + '.pt')
 
-    if not os.path.exists(src_save_path):
-        os.system("mkdir -p " + src_save_path)
-
-    if not os.path.exists(tgt_save_path):
-        os.system("mkdir -p " + tgt_save_path)
+    if not os.path.exists(root_save_path):
+        os.system("mkdir -p " + root_save_path)
 
     log('process source')
     print(f"Processing for {args.src_domain}")
