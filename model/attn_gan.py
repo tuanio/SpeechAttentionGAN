@@ -25,17 +25,17 @@ class MagnitudeAttentionGAN(L.LightningModule):
         self.istft = T.InverseSpectrogram(**stft_params)
 
     def define_generators(self):
-        self.gen_A2B = AttentionGuideGenerator(**self.cfg.generator)
-        self.gen_B2A = AttentionGuideGenerator(**self.cfg.generator)
+        self.gen_A2B = AttentionGuideGenerator(**self.hparams.cfg.generator)
+        self.gen_B2A = AttentionGuideGenerator(**self.hparams.cfg.generator)
 
     def define_discriminators(self):
         # first adversarial loss
-        self.disc_A = PatchGAN(**self.cfg.discriminator)
-        self.disc_B = PatchGAN(**self.cfg.discriminator)
+        self.disc_A = PatchGAN(**self.hparams.cfg.discriminator)
+        self.disc_B = PatchGAN(**self.hparams.cfg.discriminator)
 
         # for second adversarial loss
-        self.disc_A2 = PatchGAN(**self.cfg.discriminator)
-        self.disc_B2 = PatchGAN(**self.cfg.discriminator)
+        self.disc_A2 = PatchGAN(**self.hparams.cfg.discriminator)
+        self.disc_B2 = PatchGAN(**self.hparams.cfg.discriminator)
 
     def define_loss(self):
         self.idt_loss = nn.L1Loss()
@@ -53,12 +53,12 @@ class MagnitudeAttentionGAN(L.LightningModule):
         return (predict.sigmoid() >= threshold).sum() / torch.mul(*predict.size())
 
     def configure_optimizers(self):
-        if self.cfg.optimizer.name == "adam":
+        if self.hparams.cfg.optimizer.name == "adam":
             optimizer_class = torch.optim.Adam
-        elif self.cfg.optimizer.name == "adamw":
+        elif self.hparams.cfg.optimizer.name == "adamw":
             optimizer_class = torch.optim.AdamW
 
-        if self.cfg.scheduler.name == "one_cycle_lr":
+        if self.hparams.cfg.scheduler.name == "one_cycle_lr":
             scheduler_class = torch.optim.lr_scheduler.OneCycleLR
         else:
             scheduler_class = None
@@ -69,18 +69,18 @@ class MagnitudeAttentionGAN(L.LightningModule):
         d_params = [
             p.parameters() for i, p in vars(self).items() if i.startswith("disc_")
         ]
-        optim_g = optimizer_class(chain(*g_params), **self.cfg.optimizer.params)
-        optim_d = optimizer_class(chain(*d_params), **self.cfg.optimizer.params)
+        optim_g = optimizer_class(chain(*g_params), **self.hparams.cfg.optimizer.params)
+        optim_d = optimizer_class(chain(*d_params), **self.hparams.cfg.optimizer.params)
 
         if scheduler_class != None:
             scheduler_g = {
-                "scheduler": scheduler_class(optim_g, **self.cfg.scheduler.params),
+                "scheduler": scheduler_class(optim_g, **self.hparams.cfg.scheduler.params),
                 "interval": "step",  # or 'epoch'
                 "frequency": 1,
             }
 
             scheduler_d = {
-                "scheduler": scheduler_class(optim_g, **self.cfg.scheduler.params),
+                "scheduler": scheduler_class(optim_g, **self.hparams.cfg.scheduler.params),
                 "interval": "step",  # or 'epoch'
                 "frequency": 1,
             }
@@ -92,18 +92,18 @@ class MagnitudeAttentionGAN(L.LightningModule):
         if apply_mask:
             sh = mask.shape
             for idx in range(sh[0]):
-                for i in range(self.cfg.mask.freq_masks):
+                for i in range(self.hparams.cfg.mask.freq_masks):
                     x_left = np.random.randint(
-                        0, max(1, sh[3] - self.cfg.mask.freq_width)
+                        0, max(1, sh[3] - self.hparams.cfg.mask.freq_width)
                     )
-                    w = np.random.randint(0, self.cfg.mask.freq_width)
+                    w = np.random.randint(0, self.hparams.cfg.mask.freq_width)
                     mask[idx, :, :, x_left : x_left + w] = 0
 
-                for i in range(self.cfg.mask.time_masks):
+                for i in range(self.hparams.cfg.mask.time_masks):
                     y_left = np.random.randint(
-                        0, max(1, sh[2] - self.cfg.mask.time_width)
+                        0, max(1, sh[2] - self.hparams.cfg.mask.time_width)
                     )
-                    w = np.random.randint(0, self.cfg.mask.time_width)
+                    w = np.random.randint(0, self.hparams.cfg.mask.time_width)
                     input_spec[idx, :, y_left : y_left + w, :] = 0
         return mask.type_as(image)
 
