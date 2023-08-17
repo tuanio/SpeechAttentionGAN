@@ -57,25 +57,29 @@ class MagnitudeAttentionGAN(L.LightningModule):
         else:
             scheduler_class = None
 
-        g_params = [
-            p.parameters() for i, p in vars(self).items() if i.startswith("gen_")
-        ]
+        g_params = [self.gen_A2B.parameters(), self.gen_B2A.parameters()]
         d_params = [
-            p.parameters() for i, p in vars(self).items() if i.startswith("disc_")
+            self.disc_A.parameters(),
+            self.disc_A2.parameters(),
+            self.disc_B.parameters(),
+            self.disc_B2.parameters(),
         ]
-        print(self.gen_A2B, self.disc_A)
         optim_g = optimizer_class(chain(*g_params), **self.hparams.cfg.optimizer.params)
         optim_d = optimizer_class(chain(*d_params), **self.hparams.cfg.optimizer.params)
 
         if scheduler_class != None:
             scheduler_g = {
-                "scheduler": scheduler_class(optim_g, **self.hparams.cfg.scheduler.params),
+                "scheduler": scheduler_class(
+                    optim_g, **self.hparams.cfg.scheduler.params
+                ),
                 "interval": "step",  # or 'epoch'
                 "frequency": 1,
             }
 
             scheduler_d = {
-                "scheduler": scheduler_class(optim_g, **self.hparams.cfg.scheduler.params),
+                "scheduler": scheduler_class(
+                    optim_g, **self.hparams.cfg.scheduler.params
+                ),
                 "interval": "step",  # or 'epoch'
                 "frequency": 1,
             }

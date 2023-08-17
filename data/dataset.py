@@ -14,9 +14,10 @@ audio_exts = ["wav", "flac", "mp3"]
 
 # not resizing the image, but work with (129, 128)
 class SpeechDataset(Dataset):
-    '''
-        this one work for 
-    '''
+    """
+    this one work for
+    """
+
     def __init__(
         self, path: str, domains: List[str], src_domain: str, is_train: bool = True
     ):
