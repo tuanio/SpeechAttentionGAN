@@ -104,6 +104,7 @@ logger:
 
 trainer:
   devices: 4
+  max_epochs: 50
 
 stage:
   train: true
