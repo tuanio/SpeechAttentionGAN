@@ -23,7 +23,7 @@ class ResNetBottleNeck(nn.Module):
         stride: int,
         padding: int,
         norm_layer=nn.InstanceNorm2d,  # can be instance norm
-        activation=nn.SiLU(),
+        activation=nn.SiLU,
         **kwargs
     ):
         super().__init__()

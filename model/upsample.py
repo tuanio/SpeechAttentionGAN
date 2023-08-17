@@ -35,7 +35,7 @@ class SimpleUpsample(nn.Module):
         strides=[2, 2, 1],
         paddings=[1, 1, 1],
         output_padding=[1, 1, 0],
-        activation=nn.SiLU(),
+        activation=nn.SiLU,
         **kwargs
     ):
         super().__init__()
