@@ -25,7 +25,7 @@ import concurrent.futures as cf
 
 N_FFT = 256
 WIN_LENGTH = 256
-HOP_LENGTH = 64
+HOP_LENGTH = 32
 
 PARAMS = dict(n_fft=N_FFT, win_length=WIN_LENGTH, hop_length=HOP_LENGTH)
 
@@ -64,7 +64,7 @@ def getting_all_audio(path):
     return data
 
 
-def processing(pack, is_train):
+def processing(pack, root_path, is_train):
     idx, path = pack
     log(idx)
     wav, sr = torchaudio.load(path)
@@ -77,8 +77,9 @@ def processing(pack, is_train):
 
     packs = [dict(magnitude=m, phase=p) for m, p in zip(mag_coms, phase_coms)]
     ret_data = {"data": packs, "max_size": mag_max_size, "path": path}
-    return ret_data
-
+    
+    name = path.rsplit(os.sep, 1)[-1].rsplit('.', 1)[0]
+    torch.save(ret_data, os.path.join(root_path, name + '.pt'))
 
 def main(args):
     data_path = os.path.join(args.path, args.split)
@@ -96,36 +97,23 @@ def main(args):
     is_train = args.stage == "train"
 
     root_save_path = os.path.join(args.dest_path, args.split)
-    src_save_path = os.path.join(root_save_path, args.src_domain + ".pt")
-    tgt_save_path = os.path.join(root_save_path, args.tgt_domain + ".pt")
+    src_save_path = os.path.join(root_save_path, args.src_domain)
+    tgt_save_path = os.path.join(root_save_path, args.tgt_domain)
 
-    if not os.path.exists(root_save_path):
-        os.system("mkdir -p " + root_save_path)
+    if not os.path.exists(src_save_path):
+        os.system("mkdir -p " + src_save_path)
+
+    if not os.path.exists(tgt_save_path):
+        os.system("mkdir -p " + tgt_save_path)
 
     log("process source")
     print(f"Processing for {args.src_domain}")
     with cf.ThreadPoolExecutor(max_workers=args.threads) as exe:
-        src_data = list(
-            exe.map(
-                partial(processing, is_train=is_train), enumerate(all_src_audio_path)
-            )
-        )
-    print(f"Saving {args.src_domain} data.")
-    torch.save(src_data, src_save_path)
-    log("saved source")
+        list(exe.map(partial(processing, root_path=src_save_path, is_train=is_train), enumerate(all_src_audio_path)))
 
-    log("process target")
     print(f"Processing for {args.tgt_domain}")
     with cf.ThreadPoolExecutor(max_workers=args.threads) as exe:
-        tgt_data = list(
-            exe.map(
-                partial(processing, is_train=is_train), enumerate(all_tgt_audio_path)
-            )
-        )
-    print(f"Saving {args.tgt_domain} data.")
-    torch.save(tgt_data, tgt_save_path)
-    log("saved target")
-
+        list(exe.map(partial(processing, root_path=tgt_save_path, is_train=is_train), enumerate(all_tgt_audio_path)))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

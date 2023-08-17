@@ -13,16 +13,17 @@ networks:
     paddings: [1, 1, 0]
     output_padding: [1, 1, 0]
 
+# set to 32 to higher resolution
 feature:
   stft_params:
     n_fft: 256
     win_length: 256
-    hop_length: 64
+    hop_length: 32
     power: null
   istft_params:
     n_fft: 256
     win_length: 256
-    hop_length: 64
+    hop_length: 32
 
 dm:
   root_path: /home/stud_vantuan/data/data_pickle_gan/helicopter_1h_30m
