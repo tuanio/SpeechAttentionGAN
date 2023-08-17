@@ -43,7 +43,6 @@ class MagnitudeAttentionGAN(L.LightningModule):
         self.adv_loss = nn.BCEWithLogitsLoss()
 
         self.stft = T.Spectrogram(**istft_params, power=None)
-        self.istft = T.InverseSpectrogram(**istft_params)
 
         custom_src_audio_path = '/home/stud_vantuan/share_with_150/cache/helicopter_1h_30m/test/clean/5514-19192-0038.flac'
         wav, sr = torchaudio.load(custom_src_audio_path)
@@ -292,7 +291,8 @@ class MagnitudeAttentionGAN(L.LightningModule):
             fake_magnitude_B = self.gen_A2B(mag_coms, self.gen_mask(mag_coms, False))
             mags = torch.cat([i for i in fake_magnitude_B], dim=2)[:, :, :self.phase.size(2)]
 
-            wav = self.istft(mags.cpu() + torch.exp(self.phase.cpu() * 1j))
+            cal_istft = T.InverseSpectrogram(**self.hparams.istft_params).cpu()
+            wav = cal_istft(mags.cpu() + torch.exp(self.phase.cpu() * 1j))
             torchaudio.save('temporary.wav', wav, self.sr)
             data = [[wandb.Audio('temporary.wav', caption="Clean -> Noisy")]]
             self.logger.log_table(key='AudioTable', columns=['Generated_Audio'], data=data)
