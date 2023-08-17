@@ -34,7 +34,7 @@ class SpeechDataModule(L.LightningDataModule):
         datasets = {}
         for split in cfg.split:
             datasets[split] = SpeechDataset(
-                path=os.path.join(cfg.path, split),
+                path=os.path.join(cfg.root_path, split),
                 **cfg.dataset,
             )
 
