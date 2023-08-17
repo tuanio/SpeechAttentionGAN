@@ -288,7 +288,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
         )
 
         mag_A, fake_A, cycle_A, mag_B, fake_B, cycle_B = list(
-            map(lambda x: torch.from_numpy(librosa.power_to_db(x.numpy())), [mag_A, fake_A, cycle_A, mag_B, fake_B, cycle_B])
+            map(lambda x: torch.from_numpy(librosa.amplitude_to_db(x.numpy())), [mag_A, fake_A, cycle_A, mag_B, fake_B, cycle_B])
         )
 
         A = torch.cat([mag_A, fake_A, cycle_A], dim=0)
