@@ -27,6 +27,7 @@ feature:
 dm:
   root_path: /home/stud_vantuan/data/data_pickle_gan/helicopter_1h_30m
   split: [train, test, valid]
+  batch_size: 32
   dataset:
     domains: [clean, noisy]
     src_domain: clean
@@ -103,7 +104,6 @@ logger:
 
 trainer:
   devices: 4
-  batch_size: 32
 
 stage:
   train: true
