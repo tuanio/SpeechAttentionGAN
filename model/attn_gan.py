@@ -54,8 +54,6 @@ class MagnitudeAttentionGAN(L.LightningModule):
         self.mag_coms = torch.stack(self.mag_coms, dim=0)
         self.sr = sr
 
-        self.plot_wav()
-
     def cutting(self, img, fix_w: int = FIX_W):
         max_size = img.size(-1)
         l = []
