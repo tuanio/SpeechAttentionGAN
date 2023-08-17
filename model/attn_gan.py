@@ -223,12 +223,6 @@ class MagnitudeAttentionGAN(L.LightningModule):
         optimizer_g.zero_grad()
         self.untoggle_optimizer(optimizer_g)
 
-        if len(self.training_output) < self.max_training_image_log:
-            # just get first
-            self.training_output.append((input_A[0], input_B[0]))
-
-        # log audio
-
         # discriminator
         self.toggle_optimizer(optimizer_d)
 
