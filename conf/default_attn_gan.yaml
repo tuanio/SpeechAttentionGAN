@@ -94,8 +94,8 @@ model:
     time_masks: 1
     time_width: 50
   weight:
-    lambda_cycle_A: 10
-    lambda_cycle_B: 10
+    lambda_cycle_A: 20
+    lambda_cycle_B: 20
     lambda_idt: 10
 
 logger:
