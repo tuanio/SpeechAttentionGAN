@@ -54,6 +54,8 @@ class SpeechDataset(Dataset):
         # randomly choice tgt domain
         tgt_audio = random.choice(self.tgt_pool)
 
+        print(src_audio['magnitude'].size(), src_audio['phase'].size(), tgt_audio['magnitude'].size(), tgt_audio['phase'].size())
+
         magnitude_A = self.transforms(src_audio["magnitude"])
         phase_A = self.transforms(src_audio["phase"])
 
