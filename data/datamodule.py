@@ -31,9 +31,9 @@ class SpeechDataModule(L.LightningDataModule):
     def __init__(self, dm_config):
         super().__init__()
         self.save_hyperparameters()
-        datasets = {}
+        self.datasets = {}
         for split in dm_config.split:
-            datasets[split] = SpeechDataset(
+            self.datasets[split] = SpeechDataset(
                 path=os.path.join(dm_config.root_path, split),
                 **dm_config.dataset,
             )
