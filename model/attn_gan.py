@@ -13,7 +13,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
     # this class work for magnitude only
     """
 
-    def __init__(self, cfg, stft_params: dict):
+    def __init__(self, cfg, istft_params: dict):
         super().__init__()
         self.save_hyperparameters()
         self.automatic_optimization = False
@@ -22,7 +22,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
         self.define_discriminators()
         self.define_loss()
 
-        self.istft = T.InverseSpectrogram(**stft_params)
+        self.istft = T.InverseSpectrogram(**istft_params)
 
     def define_generators(self):
         self.gen_A2B = AttentionGuideGenerator(**self.hparams.cfg.generator)
