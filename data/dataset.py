@@ -2,7 +2,7 @@ import os
 import torch
 import random
 import torchaudio
-import torchaudio.transforms as T
+import torchvision.transforms as TVT
 import torchvision
 from typing import List
 from collections import defaultdict
@@ -41,7 +41,7 @@ class SpeechDataset(Dataset):
             pass
 
         # normalize to range [-1, 1] to map with tanh activation in gan
-        self.transforms = T.Compose([T.Normalize(mean=(0.5), std=(0.5))])
+        self.transforms = TVT.Compose([TVT.Normalize(mean=(0.5), std=(0.5))])
 
     def __len__(self):
         return len(self.src_pool)
