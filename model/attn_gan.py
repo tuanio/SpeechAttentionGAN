@@ -270,10 +270,10 @@ class MagnitudeAttentionGAN(L.LightningModule):
         A = torch.cat([mag_A.log10().cpu(), fake_A.log10().cpu(), cycle_A.log10().cpu()], dim=0)
         B = torch.cat([mag_B.log10().cpu(), fake_B.log10().cpu(), cycle_B.log10().cpu()], dim=0)
 
-        grid_A = make_grid(A, nrow=3, padding=5)
-        grid_B = make_grid(B, nrow=3, padding=5)
+        grid_A = make_grid(A, nrow=mag_A.size(0), padding=5)
+        grid_B = make_grid(B, nrow=mag_A.size(0), padding=5)
 
-        self.logger.log_image('clean_real_fake_cycle', [grid_A.T])
-        self.logger.log_image('noisy_real_fake_cycle', [grid_B.T])
+        self.logger.log_image('clean_real_fake_cycle', [grid_A])
+        self.logger.log_image('noisy_real_fake_cycle', [grid_B])
 
         self.training_output.clear()
