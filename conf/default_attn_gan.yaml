@@ -43,7 +43,7 @@ model:
     upsample_name: simple
     downsample_params:
       in_channels: 2 # with mask
-      hidden_channels: 64
+      hidden_channels: 96 # 64 
       channel_expand: 2
       n_blocks: ${networks.simple_downsample.n_blocks}
       kernel_sizes: ${networks.simple_downsample.kernel_sizes}
@@ -73,7 +73,7 @@ model:
       output_padding: ${networks.simple_upsample.output_padding}
   discriminator:
     in_channels: 1
-    hidden_channels: 64
+    hidden_channels: 96 # 64
     n_layers: 3
     kernel_sizes: [4, 4, 4, 4, 5]
     strides: [2, 2, 1, 1, 1]
