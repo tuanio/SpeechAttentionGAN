@@ -46,7 +46,7 @@ class SpeechDataModule(L.LightningDataModule):
             num_workers=self.hparams.dm_config.num_workers,
             pin_memory=self.hparams.dm_config.pin_memory,
             persistent_workers=self.hparams.dm_config.persistent_workers,
-            # collate_fn=self.collate_fn,
+            collate_fn=self.collate_fn,
         )
 
     def valid_dataloader(self):
@@ -57,7 +57,7 @@ class SpeechDataModule(L.LightningDataModule):
             num_workers=self.hparams.dm_config.num_workers,
             pin_memory=self.hparams.dm_config.pin_memory,
             persistent_workers=self.hparams.dm_config.persistent_workers,
-            # collate_fn=self.collate_fn,
+            collate_fn=self.collate_fn,
         )
 
     def test_dataloader(self):
@@ -68,13 +68,13 @@ class SpeechDataModule(L.LightningDataModule):
             num_workers=self.hparams.dm_config.num_workers,
             pin_memory=self.hparams.dm_config.pin_memory,
             persistent_workers=self.hparams.dm_config.persistent_workers,
-            # collate_fn=self.collate_fn,
+            collate_fn=self.collate_fn,
         )
 
-    # def collate_fn(self, batch):
-    #     n_features = len(batch)
-    #     data = []
-    #     length = []
-    #     for i in batch:
-    #         datum = [j for j in i]
-    #         length.append([])
+    def collate_fn(self, batch):
+        magnitude_A = torch.stack([i[0] for i in batch])
+        magnitude_B = torch.stack([i[1] for i in batch])
+        phase_A = torch.stack([i[2] for i in batch])
+        phase_B = torch.stack([i[3] for i in batch])
+
+        return magnitude_A, magnitude_B, phase_A, phase_B
