@@ -26,12 +26,14 @@ class SimpleDownsample(nn.Module):
         paddings=[0, 1, 1],
         dilations=[1, 1, 1],
         norm_layer=nn.InstanceNorm2d,  # can be instance norm
+        activation=nn.SiLU # can be relu
         **kwargs
     ):
         super().__init__()
         layers = []
         out_channels = hidden_channels
         self.norm_layer = norm_layer
+        self.activation = activation
 
         for idx in range(n_blocks):
             layers.extend(
@@ -63,7 +65,7 @@ class SimpleDownsample(nn.Module):
                 in_channels, out_channels, kernel_size, stride, padding, dilation
             ),
             self.norm_layer(out_channels),
-            nn.ReLU(),
+            self.activation(),
         ]
 
     def forward(self, x: Tensor):

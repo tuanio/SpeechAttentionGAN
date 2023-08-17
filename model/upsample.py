@@ -35,10 +35,13 @@ class SimpleUpsample(nn.Module):
         strides=[2, 2, 1],
         paddings=[1, 1, 1],
         output_padding=[1, 1, 0],
+        activation=nn.SiLU(),
+        **kwargs
     ):
         super().__init__()
         layers = []
         in_channels = in_channels // (channel_expand * (n_blocks - 1))
+        self.activation = activation
         layers.extend(
             [
                 nn.Conv2d(
@@ -87,7 +90,7 @@ class SimpleUpsample(nn.Module):
     ):
         blocks = []
         if not is_output:
-            blocks = [nn.ReLU(), nn.InstanceNorm2d(out_channels)]
+            blocks = [self.activation(), nn.InstanceNorm2d(out_channels)]
         return blocks + [
             nn.ConvTranspose2d(
                 in_channels=in_channels,

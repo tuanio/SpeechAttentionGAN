@@ -23,9 +23,12 @@ class ResNetBottleNeck(nn.Module):
         stride: int,
         padding: int,
         norm_layer=nn.InstanceNorm2d,  # can be instance norm
+        activation=nn.SiLU(),
+        **kwargs
     ):
         super().__init__()
         self.norm_layer = norm_layer
+        self.activation = activation
         layers = []
         for _ in range(n_blocks):
             layers.extend(self.create_block(in_channels, kernel_size, stride, padding))
@@ -49,7 +52,7 @@ class ResNetBottleNeck(nn.Module):
                 padding_mode="reflect",
             ),
             self.norm_layer(in_channels),
-            nn.ReLU(),
+            self.activation(),
             nn.Conv2d(
                 in_channels,
                 in_channels,
