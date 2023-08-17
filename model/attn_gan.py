@@ -50,7 +50,9 @@ class MagnitudeAttentionGAN(L.LightningModule):
         return self.adv_loss(predict, label)
 
     def cal_accuracy(self, predict: Tensor, threshold: float = 0.5):
-        return (predict.sigmoid() >= threshold).sum() / reduce(lambda x, y: x*y, predict.size())
+        return (predict.sigmoid() >= threshold).sum() / reduce(
+            lambda x, y: x * y, predict.size()
+        )
 
     def configure_optimizers(self):
         if self.hparams.cfg.optimizer.name == "adam":
@@ -129,7 +131,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
         scheduler_g, scheduler_d = None, None
         if self.lr_schedulers():
             scheduler_g, scheduler_d = self.lr_schedulers()
-            
+
         lambda_idt = self.hparams.cfg.weight.lambda_idt
         lambda_cycle_A = self.hparams.cfg.weight.lambda_cycle_A
         lambda_cycle_B = self.hparams.cfg.weight.lambda_cycle_B
@@ -149,8 +151,14 @@ class MagnitudeAttentionGAN(L.LightningModule):
         adv_2_loss = self.cal_adv_loss(self.disc_B2(cycle_B), True) + self.cal_adv_loss(
             self.disc_A2(cycle_A), True
         )
-        idt_loss_A = self.idt_loss(self.gen_B2A(input_A, self.gen_mask(input_A, False)), input_A) * lambda_idt
-        idt_loss_B = self.idt_loss(self.gen_A2B(input_B, self.gen_mask(input_B, False)), input_B) * lambda_idt
+        idt_loss_A = (
+            self.idt_loss(self.gen_B2A(input_A, self.gen_mask(input_A, False)), input_A)
+            * lambda_idt
+        )
+        idt_loss_B = (
+            self.idt_loss(self.gen_A2B(input_B, self.gen_mask(input_B, False)), input_B)
+            * lambda_idt
+        )
 
         cycle_loss_A = self.cycle_loss(cycle_A, input_A) * lambda_cycle_A
         cycle_loss_B = self.cycle_loss(cycle_B, input_B) * lambda_cycle_B
@@ -183,9 +191,8 @@ class MagnitudeAttentionGAN(L.LightningModule):
         optimizer_g.zero_grad()
         self.untoggle_optimizer(optimizer_g)
 
-
         if len(self.training_output) < self.max_training_image_log:
-            # just get first 
+            # just get first
             self.training_output.append((input_A[0], input_B[0]))
 
         # log audio
@@ -254,9 +261,12 @@ class MagnitudeAttentionGAN(L.LightningModule):
         self.untoggle_optimizer(optimizer_d)
 
     def on_train_epoch_end(self):
-        
-        mag_A = torch.stack([i[0] for i in self.training_output], dim=0).type_as(self.gen_A2B.downsample.model[0].weight)
-        mag_B = torch.stack([i[1] for i in self.training_output], dim=0).type_as(self.gen_A2B.downsample.model[0].weight)
+        mag_A = torch.stack([i[0] for i in self.training_output], dim=0).type_as(
+            self.gen_A2B.downsample.model[0].weight
+        )
+        mag_B = torch.stack([i[1] for i in self.training_output], dim=0).type_as(
+            self.gen_A2B.downsample.model[0].weight
+        )
 
         with torch.inference_mode():
             mask = self.gen_mask(mag_A, False)
@@ -267,13 +277,26 @@ class MagnitudeAttentionGAN(L.LightningModule):
             fake_A = self.gen_B2A(mag_B, mask)
             cycle_B = self.gen_A2B(fake_A, mask)
 
-        A = torch.cat([mag_A.log10().cpu(), fake_A.log10().cpu(), cycle_A.log10().cpu()], dim=0)
-        B = torch.cat([mag_B.log10().cpu(), fake_B.log10().cpu(), cycle_B.log10().cpu()], dim=0)
+        def normalize(x):
+            mn = x.min()
+            mx = x.max()
+            return (x + 1) * 0.5 - (mx - mn) + mn
+
+        mag_A, fake_A, cycle_A, mag_B, fake_B, cycle_B = list(
+            map(lambda x: normalize(x.cpu()), [mag_A, fake_A, cycle_A, mag_B, fake_B, cycle_B])
+        )
+
+        mag_A, fake_A, cycle_A, mag_B, fake_B, cycle_B = list(
+            map(lambda x: 10*x.log10(), [mag_A, fake_A, cycle_A, mag_B, fake_B, cycle_B])
+        )
+
+        A = torch.cat([mag_A, fake_A, cycle_A], dim=0)
+        B = torch.cat([mag_B, fake_B, cycle_B], dim=0)
 
         grid_A = make_grid(A, nrow=mag_A.size(0), padding=5)
         grid_B = make_grid(B, nrow=mag_A.size(0), padding=5)
 
-        self.logger.log_image('clean_real_fake_cycle', [grid_A])
-        self.logger.log_image('noisy_real_fake_cycle', [grid_B])
+        self.logger.log_image("clean_real_fake_cycle", [grid_A])
+        self.logger.log_image("noisy_real_fake_cycle", [grid_B])
 
         self.training_output.clear()
