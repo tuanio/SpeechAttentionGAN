@@ -115,7 +115,7 @@ logger:
     have: true
     params:
       project: speech_attn_gan_helicopter
-      name: speech_attn_gan_runable
+      name: speech_attn_gan_remove_shuffle
 
 trainer:
   devices: 4
