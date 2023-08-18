@@ -44,7 +44,7 @@ model:
     upsample_name: simple
     downsample_params:
       in_channels: 2 # with mask
-      hidden_channels: 64 # 64 
+      hidden_channels: 96 # 64 
       channel_expand: 2
       n_blocks: ${networks.simple_downsample.n_blocks}
       kernel_sizes: ${networks.simple_downsample.kernel_sizes}
@@ -106,8 +106,8 @@ model:
     time_masks: 2
     time_width: 50
   weight:
-    lambda_cycle_A: 10
-    lambda_cycle_B: 10
+    lambda_cycle_A: 2
+    lambda_cycle_B: 2
     lambda_idt: 0.5
   criterion:
     gan_loss: l2 # l2 or bce 
