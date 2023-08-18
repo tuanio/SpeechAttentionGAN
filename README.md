@@ -13,7 +13,7 @@ Pytorch, Lightning Pytorch implementation of AttentionGAN paper that compatible 
 ## Solution to prevent "mode collapse"
 * check meaning that it's solve and stride mean that not use 
 - [ ] <strike> Backward individual D loss instead of add them up </strike> (split to individual, make each Ds do their old task)
-- [ ] <strike> Vocoder MelGAN instead </strike> (cannot, because MelGAN does not good to model noisy - ![Colab](https://colab.research.google.com/drive/191ul8y_rLHfPH-oceNnU9cxgpZ4tbUFS?usp=sharing))
+- [ ] <strike> Vocoder MelGAN instead </strike> (cannot, because MelGAN does not good to model noisy - [Colab](https://colab.research.google.com/drive/191ul8y_rLHfPH-oceNnU9cxgpZ4tbUFS?usp=sharing))
 - [ ] Remove shuffle generated data
 - [ ] Using image pool like author's code
 - [ ] Edit the generator
