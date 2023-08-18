@@ -74,7 +74,7 @@ model:
       output_padding: ${networks.simple_upsample.output_padding}
   discriminator:
     in_channels: 1
-    hidden_channels: 48
+    hidden_channels: 64
     n_layers: 3
     kernel_size: 4
     stride: 2
@@ -82,16 +82,16 @@ model:
     channel_expand: 2
     leakyrelu_slope: 0.2
   optimizer:
-    name: adamw
+    name: adam
     grad_clip: 0
     params_gen:
+      lr: 0.0002
+      betas: [0.5, 0.999]
+      # weight_decay: 0.00001
+    params_disc:
       lr: 0.0001
       betas: [0.5, 0.999]
-      weight_decay: 0.00001
-    params_disc:
-      lr: 0.00005
-      betas: [0.5, 0.999]
-      weight_decay: 0.00001
+      # weight_decay: 0.00001
   scheduler:
     name: one_cycle_lr
     params_gen:
@@ -124,7 +124,7 @@ logger:
     have: true
     params:
       project: speech_attn_gan_helicopter
-      name: speech_attn_gan_remove_shuffle_backward_individual_l2loss_rb12_gen96_disc48_lambda5
+      name: speech_attn_gan_remove_shuffle_backward_individual_l2loss_rb12_gen64_disc48_lambda5
 
 trainer:
   devices: 4
