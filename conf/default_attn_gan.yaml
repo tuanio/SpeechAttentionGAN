@@ -126,7 +126,7 @@ logger:
     have: true
     params:
       project: speech_attn_gan_helicopter
-      name: speech_attn_gan_remove_shuffle_backward_individual_l2loss_rb9_gen64_disc64_lambda5
+      name: speech_attn_gan_new_code
 
 trainer:
   devices: 4
