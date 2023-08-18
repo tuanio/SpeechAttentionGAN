@@ -96,10 +96,10 @@ model:
     name: one_cycle_lr
     params_gen:
       max_lr: ${model.optimizer.params_gen.lr}
-      pct_start: 0.5
+      pct_start: 0.3
     params_disc:
       max_lr: ${model.optimizer.params_disc.lr}
-      pct_start: 0.5
+      pct_start: 0.3
   mask: # set to zero to remove
     freq_masks: 0
     freq_width: 0
