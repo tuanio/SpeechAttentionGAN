@@ -109,6 +109,8 @@ model:
     lambda_cycle_A: 10
     lambda_cycle_B: 10
     lambda_idt: 0.5
+  criterion:
+    gan_loss: l2 # l2 or bce 
 
 logger:
   wandb:

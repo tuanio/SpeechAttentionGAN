@@ -19,3 +19,10 @@ def conv_do_replace(old_net, in_channels):
 class Identity(nn.Module):
     def forward(self, x: Tensor):
         return x
+
+def create_adversarial_loss(name):
+    # already with sigmoid
+    if name == 'l2':
+        return nn.MSELoss()
+    elif name == 'bce':
+        return nn.BCELoss()

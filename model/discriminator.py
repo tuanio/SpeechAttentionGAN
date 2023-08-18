@@ -74,4 +74,4 @@ class PatchGAN(nn.Module):
         self.model = nn.Sequential(*layers)
 
     def forward(self, x: Tensor):
-        return self.model(x)
+        return self.model(x).sigmoid()
