@@ -85,11 +85,11 @@ model:
     name: adamw
     grad_clip: 0
     params_gen:
-      lr: 0.0003
+      lr: 0.0001
       betas: [0.5, 0.999]
       weight_decay: 0.00001
     params_disc:
-      lr: 0.0001
+      lr: 0.00005
       betas: [0.5, 0.999]
       weight_decay: 0.00001
   scheduler:
@@ -124,7 +124,7 @@ logger:
     have: true
     params:
       project: speech_attn_gan_helicopter
-      name: speech_attn_gan_remove_shuffle_backward_individual_l2loss_gen96
+      name: speech_attn_gan_remove_shuffle_backward_individual_l2loss_rb12
 
 trainer:
   devices: 4
