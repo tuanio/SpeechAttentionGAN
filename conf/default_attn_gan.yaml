@@ -111,13 +111,15 @@ model:
     lambda_idt: 0.5
   criterion:
     gan_loss: l2 # l2 or bce 
+    idt_loss: l1
+    cycle_loss: l1
 
 logger:
   wandb:
     have: true
     params:
       project: speech_attn_gan_helicopter
-      name: speech_attn_gan_remove_shuffle_backward_individual
+      name: speech_attn_gan_remove_shuffle_backward_individual_l2loss
 
 trainer:
   devices: 4

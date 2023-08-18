@@ -20,9 +20,12 @@ class Identity(nn.Module):
     def forward(self, x: Tensor):
         return x
 
-def create_adversarial_loss(name):
+def get_criterion(name):
     # already with sigmoid
     if name == 'l2':
         return nn.MSELoss()
+    if name == 'l1':
+        return nn.L1Loss()
     elif name == 'bce':
         return nn.BCELoss()
+    return nn.Identity()

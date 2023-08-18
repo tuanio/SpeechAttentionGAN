@@ -11,6 +11,7 @@ from functools import reduce
 from torchvision.utils import make_grid
 from .generator import AttentionGuideGenerator
 from .discriminator import PatchGAN
+from .utils import get_criterion
 import librosa
 
 FIX_W = 128
@@ -39,9 +40,9 @@ class MagnitudeAttentionGAN(L.LightningModule):
         self.disc_A2 = PatchGAN(**self.hparams.cfg.discriminator)
         self.disc_B2 = PatchGAN(**self.hparams.cfg.discriminator)
 
-        self.idt_loss = nn.L1Loss()
-        self.cycle_loss = nn.L1Loss()
-        self.adv_loss = nn.BCEWithLogitsLoss()
+        self.idt_loss = get_criterion(cfg.criterion.idt_loss)
+        self.cycle_loss = get_criterion(cfg.criterion.cycle_loss)
+        self.adv_loss = get_criterion(cfg.criterion.gan_loss)
 
         self.stft = T.Spectrogram(**istft_params, power=None)
 
