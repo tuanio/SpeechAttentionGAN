@@ -240,45 +240,44 @@ class MagnitudeAttentionGAN(L.LightningModule):
         d_A_real_loss = self.cal_adv_loss(self.disc_A(input_B), True)
         d_B_fake_inp = self.disc_A(fake_B.detach())
         d_A_fake_loss = self.cal_adv_loss(d_B_fake_inp, False)
+        d_A_loss = (d_A_real_loss + d_A_fake_loss) * 0.5
 
         d_B_real_loss = self.cal_adv_loss(self.disc_B(input_A), True)
         d_A_fake_inp = self.disc_B(fake_A.detach())
         d_B_fake_loss = self.cal_adv_loss(d_A_fake_inp, False)
+        d_B_loss = (d_B_real_loss + d_B_fake_loss) * 0.5
 
         d_A2_real_loss = self.cal_adv_loss(self.disc_A2(input_A), True)
         d_A2_fake_inp = self.disc_A2(cycle_A.detach())
         d_A2_fake_loss = self.cal_adv_loss(d_A2_fake_inp, False)
+        d_A2_loss = (d_A2_real_loss + d_A2_fake_loss) * 0.5
 
         d_B2_real_loss = self.cal_adv_loss(self.disc_B2(input_B), True)
         d_B2_fake_inp = self.disc_B2(cycle_B.detach())
         d_B2_fake_loss = self.cal_adv_loss(d_B2_fake_inp, False)
+        d_B2_loss = (d_B2_real_loss + d_B2_fake_loss) * 0.5
 
-        d_loss = (
-            d_A_real_loss
-            + d_A_fake_loss
-            + d_B_real_loss
-            + d_B_fake_loss
-            + d_A2_real_loss
-            + d_A2_fake_loss
-            + d_B2_real_loss
-            + d_B2_fake_loss
-        )
+        # d_loss = (
+        #     d_A_loss + d_B_loss + d_A2_loss + d_B2_loss
+        # )
 
-        self.log("d_loss", d_loss, prog_bar=True)
-        self.log("d_A_real_loss", d_A_real_loss)
-        self.log("d_A_fake_loss", d_A_fake_loss)
-        self.log("d_B_real_loss", d_B_real_loss)
-        self.log("d_B_fake_loss", d_B_fake_loss)
-        self.log("d_A2_real_loss", d_A2_real_loss)
-        self.log("d_A2_fake_loss", d_A2_fake_loss)
-        self.log("d_B2_real_loss", d_B2_real_loss)
-        self.log("d_B2_fake_loss", d_B2_fake_loss)
+        # self.log("d_loss", d_loss, prog_bar=True)
+        self.log("d_A_loss", d_A_loss, prog_bar=True)
+        self.log("d_B_loss", d_B_loss, prog_bar=True)
+        self.log("d_A2_loss", d_A2_loss, prog_bar=True)
+        self.log("d_B2_loss", d_B2_loss, prog_bar=True)
         self.log("d_A_accuracy", self.cal_accuracy(d_A_fake_inp))
         self.log("d_B_accuracy", self.cal_accuracy(d_B_fake_inp))
         self.log("d_A2_accuracy", self.cal_accuracy(d_A2_fake_inp))
         self.log("d_B2_accuracy", self.cal_accuracy(d_B2_fake_inp))
 
-        self.manual_backward(d_loss)
+        # update individually to make it's focus on their task
+        self.manual_backward(d_A_loss)
+        self.manual_backward(d_B_loss)
+        self.manual_backward(d_A2_loss)
+        self.manual_backward(d_B2_loss)
+        optimizer_d.step()
+
         if grad_clip:
             self.clip_gradients(
                 optimizer_g, gradient_clip_val=grad_clip, gradient_clip_algorithm="norm"
