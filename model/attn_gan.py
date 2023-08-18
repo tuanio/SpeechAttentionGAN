@@ -319,7 +319,8 @@ class MagnitudeAttentionGAN(L.LightningModule):
             )
 
     def on_train_epoch_end(self):
-        self.plot_wav()
+        if self.cfg.hparams.log_wav:
+            self.plot_wav()
 
     # def on_train_epoch_end(self):
     #     mag_A = torch.stack([i[0] for i in self.training_output], dim=0).type_as(

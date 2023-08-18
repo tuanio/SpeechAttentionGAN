@@ -52,7 +52,7 @@ model:
       paddings: ${networks.simple_downsample.paddings}
       dilations: ${networks.simple_downsample.dilations}
     bottle_neck_params:
-      n_blocks: 12 # 6 for 128x128, 9 for 256x256
+      n_blocks: 6 # 6 for 128x128, 9 for 256x256
       kernel_size: 3
       stride: 1
       padding: 1
@@ -118,13 +118,14 @@ model:
     init_gain: 0.02
   image_pool:
     pool_size: 50
+  log_wav: false
 
 logger:
   wandb:
     have: true
     params:
       project: speech_attn_gan_helicopter
-      name: speech_attn_gan_remove_shuffle_backward_individual_l2loss_rb12_gen64_disc48_lambda5
+      name: speech_attn_gan_remove_shuffle_backward_individual_l2loss_rb12_gen64_disc64_lambda5
 
 trainer:
   devices: 4
