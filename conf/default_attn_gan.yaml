@@ -89,7 +89,7 @@ model:
       betas: [0.5, 0.999]
       # weight_decay: 0.00001
     params_disc:
-      lr: 0.00005
+      lr: 0.0002
       betas: [0.5, 0.999]
       # weight_decay: 0.00001
   scheduler:
@@ -107,9 +107,9 @@ model:
     time_masks: 1
     time_width: 50
   weight:
-    lambda_cycle_A: 10
-    lambda_cycle_B: 10
-    lambda_idt: 0.5
+    lambda_cycle_A: 1
+    lambda_cycle_B: 1
+    lambda_idt: 1
   criterion:
     gan_loss: l2 # l2 or bce 
     idt_loss: l1
