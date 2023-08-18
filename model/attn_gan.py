@@ -180,7 +180,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
         cycle_A = self.gen_B2A(fake_B, self.gen_mask(fake_B, False))
 
         fake_A = self.gen_B2A(input_B, self.gen_mask(input_B, True))
-        cycle_B = self.gen_A2B(fake_A, self.gen_mask(fake_B, False))
+        cycle_B = self.gen_A2B(fake_A, self.gen_mask(fake_A, False))
 
         adv_1_A_loss = self.cal_adv_loss(self.disc_B(fake_A), True)
         adv_1_B_loss = self.cal_adv_loss(self.disc_A(fake_B), True)
@@ -282,7 +282,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
         self.manual_backward(d_A_loss)
         self.manual_backward(d_B_loss)
         self.manual_backward(d_A2_loss)
-        self.manual_backward(d_B2_loss)
+        self.manual_backward(d_B2_loss) 
         optimizer_d.step()
 
         if grad_clip:
