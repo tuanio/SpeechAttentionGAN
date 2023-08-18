@@ -182,12 +182,14 @@ class MagnitudeAttentionGAN(L.LightningModule):
         fake_A = self.gen_B2A(input_B, self.gen_mask(input_B, True))
         cycle_B = self.gen_A2B(fake_A, self.gen_mask(fake_B, False))
 
-        adv_1_loss = self.cal_adv_loss(self.disc_B(fake_A), True) + self.cal_adv_loss(
-            self.disc_A(fake_B), True
-        )
-        adv_2_loss = self.cal_adv_loss(self.disc_B2(cycle_B), True) + self.cal_adv_loss(
-            self.disc_A2(cycle_A), True
-        )
+        adv_1_A_loss = self.cal_adv_loss(self.disc_B(fake_A), True)
+        adv_1_B_loss = self.cal_adv_loss(self.disc_A(fake_B), True)
+        adv_1_loss = adv_1_A_loss + adv_1_B_loss
+
+        adv_2_A_loss = self.cal_adv_loss(self.disc_A2(cycle_A), True)
+        adv_2_B_loss = self.cal_adv_loss(self.disc_B2(cycle_B), True)
+        adv_2_loss = adv_2_A_loss + adv_2_B_loss
+
         idt_loss_A = (
             self.idt_loss(self.gen_B2A(input_A, self.gen_mask(input_A, False)), input_A)
             * lambda_idt
@@ -212,6 +214,10 @@ class MagnitudeAttentionGAN(L.LightningModule):
         self.log("g_loss", g_loss, prog_bar=True)
         self.log("adv1_loss", adv_1_loss)
         self.log("adv2_loss", adv_2_loss)
+        self.log("adv1_fakeB_discA_loss", adv_1_B_loss)
+        self.log("adv1_fakeA_discB_loss", adv_1_A_loss)
+        self.log("adv2_cycleA_discA2_loss", adv_2_A_loss)
+        self.log("adv2_cycleB_discB2_loss", adv_2_B_loss)
         self.log("idt_loss_A", idt_loss_A)
         self.log("idt_loss_B", idt_loss_B)
         self.log("cycle_loss_A", cycle_loss_A)
