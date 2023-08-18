@@ -12,8 +12,8 @@ Pytorch, Lightning Pytorch implementation of AttentionGAN paper that compatible 
 
 ## Solution to prevent "mode collapse"
 * check meaning that it's solve and stride mean that not use 
-- [] <strike> Backward individual D loss instead of add them up </strike> 
-- [] <strike> Vocoder MelGAN instead </strike> (cannot, because MelGAN does not good to model noisy - ![Colab](https://colab.research.google.com/drive/191ul8y_rLHfPH-oceNnU9cxgpZ4tbUFS?usp=sharing))
+- [ ] <strike> Backward individual D loss instead of add them up </strike> (split to individual, make each Ds do their old task)
+- [ ] <strike> Vocoder MelGAN instead </strike> (cannot, because MelGAN does not good to model noisy - ![Colab](https://colab.research.google.com/drive/191ul8y_rLHfPH-oceNnU9cxgpZ4tbUFS?usp=sharing))
 - [ ] Remove shuffle generated data
 - [ ] Using image pool like author's code
 - [ ] Edit the generator
@@ -21,7 +21,7 @@ Pytorch, Lightning Pytorch implementation of AttentionGAN paper that compatible 
 - [ ] Deep Conformer Generator modeling Spectrogram/MelSpectrogram (sequence modeling instead of just fix length frames)
 - Adversarial Loss:
     - [ ] <strike> BCEWithLogitsLoss </strike> (very unstable, in my experiments, the loss keep increasing)
-    - [ ] MSELoss (author loss, Fabian advice that it) 
+    - [ ] MSELoss (author loss, Fabian advice that it, also many paper and code use this instead) 
 - Feature input:
     - [ ] Whole feature (modeling the whole feature sequence)
     - [ ] Fix-length chunks
