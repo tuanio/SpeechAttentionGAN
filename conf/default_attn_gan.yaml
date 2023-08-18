@@ -119,7 +119,7 @@ model:
     init_gain: 0.02
   image_pool:
     pool_size: 50
-  log_wav: false
+  log_wav: true
 
 logger:
   wandb:
