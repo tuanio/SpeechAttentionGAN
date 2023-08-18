@@ -52,7 +52,7 @@ model:
       paddings: ${networks.simple_downsample.paddings}
       dilations: ${networks.simple_downsample.dilations}
     bottle_neck_params:
-      n_blocks: 6 # 6 for 128x128, 9 for 256x256
+      n_blocks: 9 # 6 for 128x128, 9 for 256x256
       kernel_size: 3
       stride: 1
       padding: 1
@@ -102,9 +102,9 @@ model:
       pct_start: 0.4
   mask: # set to zero to remove
     freq_masks: 1
-    freq_width: 50
+    freq_width: 30
     time_masks: 1
-    time_width: 50
+    time_width: 30
   weight:
     lambda_cycle_A: 5
     lambda_cycle_B: 5
@@ -114,7 +114,7 @@ model:
     idt_loss: l1
     cycle_loss: l1
   init_params:
-    init_type: normal
+    init_type: xavier
     init_gain: 0.02
   image_pool:
     pool_size: 50
