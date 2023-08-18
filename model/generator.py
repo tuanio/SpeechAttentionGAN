@@ -47,11 +47,8 @@ class AttentionGuideGenerator(nn.Module):
         inp = torch.cat([x * mask, mask], dim=1)
         enc = self.downsample(inp)
         emb = self.bottle_neck(enc)
-        print("Bottle neck:", emb.size())
         attn_masks = self.softmax(self.upsample_attn(emb))
-        print("After attn mask:", attn_masks.size())
         contents = self.tanh(self.upsample_content(emb))
-        print("After content mask:", contents.size())
 
         bg_mask = attn_masks[:, -1:, :, :]
         attn_masks = attn_masks[:, :-1, :, :]
