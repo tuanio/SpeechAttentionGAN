@@ -106,8 +106,8 @@ model:
     time_masks: 2
     time_width: 50
   weight:
-    lambda_cycle_A: 0.5
-    lambda_cycle_B: 0.5
+    lambda_cycle_A: 10
+    lambda_cycle_B: 10
     lambda_idt: 0.5
   criterion:
     gan_loss: l2 # l2 or bce 
