@@ -85,11 +85,11 @@ model:
     name: adamw
     grad_clip: 0
     params_gen:
-      lr: 0.0005
+      lr: 0.0001
       betas: [0.5, 0.999]
       weight_decay: 0.0001
     params_disc:
-      lr: 0.00005
+      lr: 0.0001
       betas: [0.5, 0.999]
       weight_decay: 0.0001
   scheduler:
