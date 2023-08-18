@@ -52,7 +52,7 @@ model:
       paddings: ${networks.simple_downsample.paddings}
       dilations: ${networks.simple_downsample.dilations}
     bottle_neck_params:
-      n_blocks: 6 # 6 for 128x128, 9 for 256x256
+      n_blocks: 9 # 6 for 128x128, 9 for 256x256
       kernel_size: 3
       stride: 1
       padding: 1
@@ -75,7 +75,7 @@ model:
   discriminator:
     in_channels: 1
     hidden_channels: 64
-    n_layers: 3
+    n_layers: 2 # 3
     kernel_size: 4
     stride: 2
     padding: 1
