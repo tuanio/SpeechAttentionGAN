@@ -44,7 +44,7 @@ model:
     upsample_name: simple
     downsample_params:
       in_channels: 2 # with mask
-      hidden_channels: 64 # 64 
+      hidden_channels: 96 # 64 
       channel_expand: 2
       n_blocks: ${networks.simple_downsample.n_blocks}
       kernel_sizes: ${networks.simple_downsample.kernel_sizes}
@@ -74,7 +74,7 @@ model:
       output_padding: ${networks.simple_upsample.output_padding}
   discriminator:
     in_channels: 1
-    hidden_channels: 64 
+    hidden_channels: 64
     n_layers: 3
     kernel_size: 4
     stride: 2
@@ -96,18 +96,18 @@ model:
     name: one_cycle_lr
     params_gen:
       max_lr: ${model.optimizer.params_gen.lr}
-      pct_start: 0.3
+      pct_start: 0.4
     params_disc:
       max_lr: ${model.optimizer.params_disc.lr}
-      pct_start: 0.3
+      pct_start: 0.4
   mask: # set to zero to remove
-    freq_masks: 0
-    freq_width: 0
-    time_masks: 2
+    freq_masks: 1
+    freq_width: 50
+    time_masks: 1
     time_width: 50
   weight:
-    lambda_cycle_A: 10
-    lambda_cycle_B: 10
+    lambda_cycle_A: 5
+    lambda_cycle_B: 5
     lambda_idt: 0.5
   criterion:
     gan_loss: l2 # l2 or bce 
