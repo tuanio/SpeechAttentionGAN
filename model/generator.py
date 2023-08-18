@@ -41,6 +41,7 @@ class AttentionGuideGenerator(nn.Module):
 
         bg_mask = attn_masks[:, -1:, :, :]
         attn_masks = attn_masks[:, :-1, :, :]
-        
+
         fake_img = (attn_masks * contents).sum(dim=1, keepdim=True) + x * bg_mask
         return fake_img
+

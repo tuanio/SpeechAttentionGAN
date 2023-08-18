@@ -52,7 +52,7 @@ model:
       paddings: ${networks.simple_downsample.paddings}
       dilations: ${networks.simple_downsample.dilations}
     bottle_neck_params:
-      n_blocks: 9 # 6 for 128x128, 9 for 256x256
+      n_blocks: 6 # 6 for 128x128, 9 for 256x256
       kernel_size: 3
       stride: 1
       padding: 1
@@ -89,7 +89,7 @@ model:
       betas: [0.5, 0.999]
       # weight_decay: 0.00001
     params_disc:
-      lr: 0.0002
+      lr: 0.00005
       betas: [0.5, 0.999]
       # weight_decay: 0.00001
   scheduler:
@@ -107,8 +107,8 @@ model:
     time_masks: 1
     time_width: 50
   weight:
-    lambda_cycle_A: 7
-    lambda_cycle_B: 7
+    lambda_cycle_A: 10
+    lambda_cycle_B: 10
     lambda_idt: 0.5
   criterion:
     gan_loss: l2 # l2 or bce 
