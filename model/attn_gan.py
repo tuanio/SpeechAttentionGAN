@@ -196,7 +196,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
             * lambda_idt
         )
 
-        cycle_loss_A = self.cycle_loss(cycle_A, input_A) * lambda_cycle_A
+        cycle_loss_A = self.cycle_loss(cycle_A, input_A) * lambda_cycle_A 
         cycle_loss_B = self.cycle_loss(cycle_B, input_B) * lambda_cycle_B
 
         g_loss = (
@@ -232,10 +232,10 @@ class MagnitudeAttentionGAN(L.LightningModule):
 
         # shuffle images for diverse training data - cycle gan
         # idea come from using history generated to update gan
-        fake_A = self.shuffle_data(fake_A)
-        fake_B = self.shuffle_data(fake_B)
-        cycle_A = self.shuffle_data(cycle_A)
-        cycle_B = self.shuffle_data(cycle_B)
+        # fake_A = self.shuffle_data(fake_A)
+        # fake_B = self.shuffle_data(fake_B)
+        # cycle_A = self.shuffle_data(cycle_A)
+        # cycle_B = self.shuffle_data(cycle_B)
 
         d_A_real_loss = self.cal_adv_loss(self.disc_A(input_B), True)
         d_B_fake_inp = self.disc_A(fake_B.detach())

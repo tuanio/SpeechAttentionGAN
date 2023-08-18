@@ -9,3 +9,11 @@ Pytorch, Lightning Pytorch implementation of AttentionGAN paper that compatible 
 - normalize magnitude to [-1, 1] range to match with tanh activation of magnitude generation head
 - phase generation neither need go through tanh activation nor normalize [-1, 1] (in case it's complex value)
 - in case of phase is just angle (meaning that take float value of phase instead of complex, we still can generate through [-1, 1] then tanh activation)
+
+## Solution to prevent "mode collapse"
+* check meaning that it's does not solve
+- [x] Backward individual D loss instead of add them up 
+- [ ] Remove shuffle generated data
+- [ ] Using image pool like author's code
+- [ ] Edit the generator
+- [ ] Edit the discriminator
