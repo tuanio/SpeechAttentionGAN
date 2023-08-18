@@ -119,7 +119,7 @@ logger:
     have: true
     params:
       project: speech_attn_gan_helicopter
-      name: speech_attn_gan_remove_shuffle_backward_individual_l2loss
+      name: speech_attn_gan_remove_shuffle_backward_individual_l2loss_gen96
 
 trainer:
   devices: 4
