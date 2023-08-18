@@ -199,7 +199,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
             * lambda_idt
         )
 
-        cycle_loss_A = self.cycle_loss(cycle_A, input_A) * lambda_cycle_A 
+        cycle_loss_A = self.cycle_loss(cycle_A, input_A) * lambda_cycle_A
         cycle_loss_B = self.cycle_loss(cycle_B, input_B) * lambda_cycle_B
 
         g_loss = (
@@ -282,7 +282,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
         self.manual_backward(d_A_loss)
         self.manual_backward(d_B_loss)
         self.manual_backward(d_A2_loss)
-        self.manual_backward(d_B2_loss) 
+        self.manual_backward(d_B2_loss)
         optimizer_d.step()
 
         if grad_clip:

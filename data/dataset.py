@@ -35,11 +35,11 @@ class SpeechDataset(Dataset):
         if is_train:
             self.src_pool = []
             for f in tqdm(all_src_path, desc="Loading sources files..."):
-                self.src_pool.extend(torch.load(f)['data'])
-            
+                self.src_pool.extend(torch.load(f)["data"])
+
             self.tgt_pool = []
             for f in tqdm(all_tgt_path, desc="Loading target files..."):
-                self.tgt_pool.extend(torch.load(f)['data'])
+                self.tgt_pool.extend(torch.load(f)["data"])
 
         # if is_train or not is_train:
         #     pbar = tqdm(desc="Preparing for " + self.src_domain)

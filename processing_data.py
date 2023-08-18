@@ -25,7 +25,7 @@ import concurrent.futures as cf
 
 N_FFT = 256
 WIN_LENGTH = 256
-HOP_LENGTH = 32
+HOP_LENGTH = 64
 
 PARAMS = dict(n_fft=N_FFT, win_length=WIN_LENGTH, hop_length=HOP_LENGTH)
 

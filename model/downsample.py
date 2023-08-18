@@ -26,8 +26,8 @@ class SimpleDownsample(nn.Module):
         paddings=[0, 1, 1],
         dilations=[1, 1, 1],
         norm_layer=nn.InstanceNorm2d,  # can be instance norm
-        activation=nn.ReLU, # can be relu
-        **kwargs,  
+        activation=nn.ReLU,  # can be relu
+        **kwargs,
     ):
         super().__init__()
         layers = []
@@ -51,11 +51,6 @@ class SimpleDownsample(nn.Module):
         self.out_dim = out_channels // channel_expand
         self.model = nn.Sequential(*layers)
         self.pad_reflect = nn.ReflectionPad2d(3)
-
-        for m in self._modules:
-            if isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
-                m.weight.data.normal_(0, 0.02)
-                m.bias.data.zero_()
 
     def create_block(
         self, in_channels, out_channels, kernel_size, stride, padding, dilation

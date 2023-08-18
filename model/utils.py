@@ -20,12 +20,24 @@ class Identity(nn.Module):
     def forward(self, x: Tensor):
         return x
 
+
 def get_criterion(name):
     # already with sigmoid
-    if name == 'l2':
+    if name == "l2":
         return nn.MSELoss()
-    if name == 'l1':
+    if name == "l1":
         return nn.L1Loss()
-    elif name == 'bce':
+    elif name == "bce":
         return nn.BCELoss()
     return nn.Identity()
+
+
+def init_weights(model):
+    for m in model.modules():
+        if (
+            isinstance(m, nn.Conv2d)
+            or isinstance(m, nn.ConvTranspose2d)
+            or isinstance(m, nn.Linear)
+        ):
+            m.weight.data.normal_(0, 0.02)
+            m.bias.data.zero_()

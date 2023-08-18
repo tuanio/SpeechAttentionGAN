@@ -1,7 +1,7 @@
 networks:
   simple_downsample:
     n_blocks: 3
-    kernel_sizes: [[5, 7], 3, 3]
+    kernel_sizes: [7, 3, 3]
     strides: [1, 2, 2]
     paddings: [0, 1, 1]
     dilations: [1, 1, 1]
@@ -18,12 +18,12 @@ feature:
   stft_params:
     n_fft: 256
     win_length: 256
-    hop_length: 32
+    hop_length: 64
     power: null
   istft_params:
     n_fft: 256
     win_length: 256
-    hop_length: 32
+    hop_length: ${feature.stft_params.hop_length}
 
 dm:
   root_path: /home/stud_vantuan/data/data_pickle_gan/helicopter_1h_30m
@@ -52,7 +52,7 @@ model:
       paddings: ${networks.simple_downsample.paddings}
       dilations: ${networks.simple_downsample.dilations}
     bottle_neck_params:
-      n_blocks: 9
+      n_blocks: 6 # 6 for 128x128, 9 for 256x256
       kernel_size: 3
       stride: 1
       padding: 1
@@ -89,7 +89,7 @@ model:
       betas: [0.5, 0.999]
       weight_decay: 0.0001
     params_disc:
-      lr: 0.0001
+      lr: 0.0002
       betas: [0.5, 0.999]
       weight_decay: 0.0001
   scheduler:
