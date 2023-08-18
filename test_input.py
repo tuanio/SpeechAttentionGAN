@@ -13,6 +13,8 @@ def main(cfg: DictConfig):
     m = torch.rand(4, 1, 129, 128)
 
     gen = AttentionGuideGenerator(**cfg.model.generator)
+    print(gen)
+    print(sum(p.numel() for p in gen.parameters()))
     dis = PatchGAN(**cfg.model.discriminator)
 
     print(dis)
