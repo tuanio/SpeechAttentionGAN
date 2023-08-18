@@ -319,7 +319,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
             )
 
     def on_train_epoch_end(self):
-        if self.cfg.hparams.log_wav:
+        if self.hparams.cfg.log_wav:
             self.plot_wav()
 
     # def on_train_epoch_end(self):

@@ -89,11 +89,12 @@ model:
       betas: [0.5, 0.999]
       # weight_decay: 0.00001
     params_disc:
-      lr: 0.0001
+      lr: 0.0002
       betas: [0.5, 0.999]
       # weight_decay: 0.00001
   scheduler:
-    name: one_cycle_lr
+    # name: one_cycle_lr
+    name: null
     params_gen:
       max_lr: ${model.optimizer.params_gen.lr}
       pct_start: 0.4
@@ -101,20 +102,20 @@ model:
       max_lr: ${model.optimizer.params_disc.lr}
       pct_start: 0.4
   mask: # set to zero to remove
-    freq_masks: 1
-    freq_width: 30
+    freq_masks: 0
+    freq_width: 0
     time_masks: 1
-    time_width: 30
+    time_width: 50
   weight:
-    lambda_cycle_A: 5
-    lambda_cycle_B: 5
+    lambda_cycle_A: 7
+    lambda_cycle_B: 7
     lambda_idt: 0.5
   criterion:
     gan_loss: l2 # l2 or bce 
     idt_loss: l1
     cycle_loss: l1
   init_params:
-    init_type: xavier
+    init_type: normal
     init_gain: 0.02
   image_pool:
     pool_size: 50
@@ -125,7 +126,7 @@ logger:
     have: true
     params:
       project: speech_attn_gan_helicopter
-      name: speech_attn_gan_remove_shuffle_backward_individual_l2loss_rb12_gen64_disc64_lambda5
+      name: speech_attn_gan_remove_shuffle_backward_individual_l2loss_rb9_gen64_disc64_lambda5
 
 trainer:
   devices: 4
