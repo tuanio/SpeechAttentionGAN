@@ -76,22 +76,22 @@ model:
     in_channels: 1
     hidden_channels: 64 
     n_layers: 3
-    kernel_sizes: [3, 4, 4, 4, 5]
-    strides: [2, 2, 1, 1, 1]
+    kernel_size: 4
+    stride: 2
     padding: 1
     channel_expand: 2
     leakyrelu_slope: 0.2
   optimizer:
-    name: adamw
+    name: adam
     grad_clip: 0
     params_gen:
       lr: 0.0002
       betas: [0.5, 0.999]
-      weight_decay: 0.0001
+      # weight_decay: 0.0001
     params_disc:
       lr: 0.0002
       betas: [0.5, 0.999]
-      weight_decay: 0.0001
+      # weight_decay: 0.0001
   scheduler:
     name: one_cycle_lr
     params_gen:
@@ -113,6 +113,11 @@ model:
     gan_loss: l2 # l2 or bce 
     idt_loss: l1
     cycle_loss: l1
+  init_params:
+    init_type: xavier
+    init_gain: 0.02
+  image_pool:
+    pool_size: 50
 
 logger:
   wandb:

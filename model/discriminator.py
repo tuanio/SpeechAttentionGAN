@@ -1,20 +1,14 @@
 from torch import nn, Tensor
 
-
 class PatchGAN(nn.Module):
+    # 70x70 patch gan from cyclegan
     def __init__(
         self,
         in_channels: int = 1,
         hidden_channels: int = 64,
         n_layers: int = 3,
-        kernel_sizes=[
-            3,
-            4,
-            4,
-            4,
-            5,
-        ],  # more than n_layers 2 layers (first and last conv)
-        strides=[2, 2, 1, 1, 1],  # quickly downsample then fine-grained information
+        kernel_size: int = 4,  # more than n_layers 2 layers (first and last conv)
+        stride: int = 2,  # quickly downsample then fine-grained information
         padding: int = 1,
         channel_expand: int = 2,
         leakyrelu_slope: float = 0.2,
@@ -24,20 +18,18 @@ class PatchGAN(nn.Module):
         use_bias = norm_layer == nn.InstanceNorm2d
 
         # norm_layer can be BatchNorm2d or InstanceNorm2d
+        # not use instance norm for first conv
         layers = [
             nn.Conv2d(
                 in_channels,
                 hidden_channels,
-                kernel_sizes[0],
-                strides[0],
+                kernel_size,
+                stride,
                 padding=padding,
                 bias=use_bias,
             ),
             nn.LeakyReLU(leakyrelu_slope, True),
         ]
-
-        strides = strides[1:]
-        kernel_sizes = kernel_sizes[1:]
 
         out_channels = hidden_channels
         for idx in range(n_layers):
@@ -48,8 +40,8 @@ class PatchGAN(nn.Module):
                     nn.Conv2d(
                         in_channels,
                         out_channels,
-                        kernel_sizes[idx],
-                        strides[idx],
+                        kernel_size,
+                        stride,
                         padding=padding,
                         bias=use_bias,
                     ),
@@ -65,8 +57,8 @@ class PatchGAN(nn.Module):
                 nn.Conv2d(
                     out_channels,
                     1,
-                    kernel_sizes[-1],
-                    stride=strides[-1],
+                    kernel_size,
+                    stride=stride,
                     padding=padding,
                 )
             ]

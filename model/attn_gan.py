@@ -11,7 +11,7 @@ from functools import reduce
 from torchvision.utils import make_grid
 from .generator import AttentionGuideGenerator
 from .discriminator import PatchGAN
-from .utils import get_criterion
+from .utils import get_criterion, init_weights, ImagePool
 import librosa
 
 FIX_W = 128
@@ -54,6 +54,13 @@ class MagnitudeAttentionGAN(L.LightningModule):
         self.mag_coms, self.max_size = self.cutting(magnitude)
         self.mag_coms = torch.stack(self.mag_coms, dim=0)
         self.sr = sr
+
+        init_weights(self, **cfg.init_params)
+
+        self.fake_A_pool = ImagePool(**cfg.image_pool)
+        self.fake_B_pool = ImagePool(**cfg.image_pool)
+        self.cycle_A_pool = ImagePool(**cfg.image_pool)
+        self.cycle_B_pool = ImagePool(**cfg.image_pool)
 
     def cutting(self, img, fix_w: int = FIX_W):
         max_size = img.size(-1)
@@ -237,12 +244,11 @@ class MagnitudeAttentionGAN(L.LightningModule):
         # discriminator
         self.toggle_optimizer(optimizer_d)
 
-        # shuffle images for diverse training data - cycle gan
-        # idea come from using history generated to update gan
-        fake_A = self.shuffle_data(fake_A)
-        fake_B = self.shuffle_data(fake_B)
-        cycle_A = self.shuffle_data(cycle_A)
-        cycle_B = self.shuffle_data(cycle_B)
+        # take 1/2 batch size with previous generated images.
+        fake_A = self.fake_A_pool.query(fake_A)
+        fake_B = self.fake_B_pool.query(fake_B)
+        cycle_A = self.cycle_A_pool.query(cycle_A)
+        cycle_B = self.cycle_B_pool.query(cycle_B)
 
         d_A_real_loss = self.cal_adv_loss(self.disc_A(input_B), True)
         d_B_fake_inp = self.disc_A(fake_B.detach())

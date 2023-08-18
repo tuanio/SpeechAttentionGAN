@@ -4,7 +4,6 @@ from .upsample import get_upsample
 from .downsample import get_downsample
 from .bottleneck import get_bottle_neck
 
-
 class AttentionGuideGenerator(nn.Module):
     def __init__(
         self,

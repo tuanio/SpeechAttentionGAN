@@ -35,11 +35,6 @@ class ResNetBottleNeck(nn.Module):
         self.out_dim = in_channels
         self.model = nn.Sequential(*layers)
 
-        for m in self._modules:
-            if isinstance(m, nn.Conv2d):
-                m.weight.data.normal_(0, 0.02)
-                m.bias.data.zero_()
-
     def create_block(self, in_channels, kernel_size, stride, padding):
         # padding reflect to prevent checkboard artifacts
         return [
