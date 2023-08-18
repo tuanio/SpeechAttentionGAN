@@ -25,6 +25,8 @@ class Identity(nn.Module):
 
 
 def get_criterion(name):
+    # Note: Do not use sigmoid as the last layer of Discriminator.
+    # LSGAN needs no sigmoid. vanilla GANs will handle it with BCEWithLogitsLoss.
     # already with sigmoid
     if name == "l2":
         return nn.MSELoss()
