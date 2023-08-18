@@ -19,31 +19,31 @@ def main(cfg: DictConfig):
 
     # torch.set_float32_matmul_precision("medium") #  | "high"
 
-    # print("Setup datamodule...")
-    # dm = SpeechDataModule(cfg.dm)
+    print("Setup datamodule...")
+    dm = SpeechDataModule(cfg.dm)
 
-    # total_steps = len(dm.train_dataloader()) * cfg.trainer.max_epochs
+    total_steps = len(dm.train_dataloader()) * cfg.trainer.max_epochs
 
-    # print("Setup GAN model")
-    # model = MagnitudeAttentionGAN(
-    #     cfg.model, total_steps=total_steps, istft_params=cfg.feature.istft_params
-    # )
+    print("Setup GAN model")
+    model = MagnitudeAttentionGAN(
+        cfg.model, total_steps=total_steps, istft_params=cfg.feature.istft_params
+    )
 
-    # print("Setup logger...")
-    # logger = None
-    # if cfg.logger.wandb.have:
-    #     logger = L.loggers.wandb.WandbLogger(**cfg.logger.wandb.params)
+    print("Setup logger...")
+    logger = None
+    if cfg.logger.wandb.have:
+        logger = L.loggers.wandb.WandbLogger(**cfg.logger.wandb.params)
 
-    # print("Setup trainer...")
-    # trainer = L.Trainer(logger=logger, **cfg.trainer)
+    print("Setup trainer...")
+    trainer = L.Trainer(logger=logger, **cfg.trainer)
 
-    # if cfg.exp.train:
-    #     print("Start training...")
-    #     trainer.fit(model, datamodule=dm)
+    if cfg.exp.train:
+        print("Start training...")
+        trainer.fit(model, datamodule=dm)
 
-    # if cfg.exp.test:
-    #     print("Start testing...")
-    #     trainer.test(model, datamodule=dm)
+    if cfg.exp.test:
+        print("Start testing...")
+        trainer.test(model, datamodule=dm)
 
 
 if __name__ == "__main__":
