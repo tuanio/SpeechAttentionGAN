@@ -21,8 +21,19 @@ class AttentionGuideGenerator(nn.Module):
         self.bottle_neck = get_bottle_neck(
             bottle_neck_name, in_channels=self.downsample.out_dim, **bottle_neck_params
         )
-        self.upsample_attn = get_upsample(
-            upsample_name, in_channels=self.bottle_neck.out_dim, **upsample_attn_params
+        # self.upsample_attn = get_upsample(
+        #     upsample_name, in_channels=self.bottle_neck.out_dim, **upsample_attn_params
+        # )
+        in_dim = self.bottle_neck.out_dim
+        self.upsample_attn = nn.Sequential(
+            nn.ConvTranspose2d(in_dim, in_dim // 2, 3, 2, 1, 1),
+            nn.InstanceNorm2d(in_dim // 2),
+            nn.ConvTranspose2d(in_dim // 2, in_dim // 4, 3, 2, 1, 1),
+            nn.InstanceNorm2d(in_dim // 4),
+            nn.Conv2d(in_dim // 4, in_dim // 4, (3, 1), 1, 0),
+            nn.InstanceNorm2d(in_dim // 4),
+            nn.ReLU(),
+            nn.Conv2d(in_dim // 4, 10, (2, 1), 1, 0),
         )
         self.upsample_content = get_upsample(
             upsample_name,
@@ -36,8 +47,11 @@ class AttentionGuideGenerator(nn.Module):
         inp = torch.cat([x * mask, mask], dim=1)
         enc = self.downsample(inp)
         emb = self.bottle_neck(enc)
+        print("Bottle neck:", emb.size())
         attn_masks = self.softmax(self.upsample_attn(emb))
+        print("After attn mask:", attn_masks.size())
         contents = self.tanh(self.upsample_content(emb))
+        print("After content mask:", contents.size())
 
         bg_mask = attn_masks[:, -1:, :, :]
         attn_masks = attn_masks[:, :-1, :, :]

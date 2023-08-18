@@ -15,13 +15,13 @@ def main(cfg: DictConfig):
     gen = AttentionGuideGenerator(**cfg.model.generator)
     print(gen)
     print(sum(p.numel() for p in gen.parameters()))
-    dis = PatchGAN(**cfg.model.discriminator)
-
-    print(dis)
 
     o = gen(x, m)
 
     print(o.shape)
+
+    # dis = PatchGAN(**cfg.model.discriminator)
+    # print(dis)
 
 if __name__ == "__main__":
     main()
