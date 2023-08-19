@@ -44,7 +44,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
         self.cycle_loss = get_criterion(cfg.criterion.cycle_loss)
         self.adv_loss = get_criterion(cfg.criterion.gan_loss)
 
-        self.stft = T.Spectrogram(**istft_params, power=None)
+        self.stft = T.Spectrogram(**istft_params, power=None, window_fn=torch.hamming_window)
 
         custom_src_audio_path = "/home/stud_vantuan/share_with_150/cache/helicopter_1h_30m/test/clean/5514-19192-0038.flac"
         wav, sr = torchaudio.load(custom_src_audio_path)
