@@ -308,10 +308,12 @@ class MagnitudeAttentionGAN(L.LightningModule):
             fake_magnitude_B = self.gen_A2B(mag_coms, self.gen_mask(mag_coms, False))
             mags = torch.cat([i for i in fake_magnitude_B], dim=2)[
                 :, :, : self.phase.size(2)
-            ]
+            ].cpu()
+
+            mags = (mags + 1) * 0.5
 
             cal_istft = T.InverseSpectrogram(**self.hparams.istft_params).cpu()
-            wav = cal_istft(mags.cpu() + torch.exp(self.phase.cpu() * 1j))
+            wav = cal_istft(mags + torch.exp(self.phase.cpu() * 1j))
             torchaudio.save("temporary.wav", wav, self.sr)
 
             if logging:
