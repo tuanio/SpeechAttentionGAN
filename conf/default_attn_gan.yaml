@@ -126,7 +126,7 @@ logger:
     have: true
     params:
       project: speech_attn_gan_helicopter
-      name: speech_attn_gan_new_code
+      name: new_code_raw_feat_9rb
 
 trainer:
   devices: 4
