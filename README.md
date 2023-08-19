@@ -26,4 +26,6 @@ Pytorch, Lightning Pytorch implementation of AttentionGAN paper that compatible 
 - Feature input:
     - [ ] Whole feature (modeling the whole feature sequence)
     - [ ] Fix-length chunks
+    - [ ] Normalize to [-1, 1] anh Tanh activation
+    - [ ] Raw feature with Linear activation
 - [ ] Gradient Penalty
