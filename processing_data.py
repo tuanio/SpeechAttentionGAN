@@ -32,7 +32,7 @@ PARAMS = dict(n_fft=N_FFT, win_length=WIN_LENGTH, hop_length=HOP_LENGTH)
 FIX_W = 128
 audio_ext = ["flac", "wav", "mp3"]
 
-stft = T.Spectrogram(**PARAMS, power=None)
+stft = T.Spectrogram(**PARAMS, power=None, window_fn=torch.hamming_window)
 # istft = T.InverseSpectrogram(**PARAMS)
 
 
