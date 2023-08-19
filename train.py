@@ -8,7 +8,6 @@ import lightning.pytorch as L
 
 @hydra.main(version_base=None, config_path="conf", config_name="default_attn_gan")
 def main(cfg: DictConfig):
-
     print("Setup datamodule...")
     dm = SpeechDataModule(cfg.dm)
 
@@ -39,7 +38,6 @@ def main(cfg: DictConfig):
         model = MagnitudeAttentionGAN.load_from_checkpoint(cfg.exp.ckpt_path)
         model.eval()
         model.plot_wav(False)
-        
 
 
 if __name__ == "__main__":

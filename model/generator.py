@@ -4,6 +4,7 @@ from .upsample import get_upsample
 from .downsample import get_downsample
 from .bottleneck import get_bottle_neck
 
+
 class AttentionGuideGenerator(nn.Module):
     def __init__(
         self,
@@ -40,19 +41,19 @@ class AttentionGuideGenerator(nn.Module):
             in_channels=self.bottle_neck.out_dim,
             **upsample_content_params
         )
-        self.tanh = nn.Tanh()
-        self.softmax = nn.Softmax(dim=1)
+        # self.tanh = nn.Tanh()
+        self.content_activation = nn.Identity()
+        self.attn_activation = nn.Softmax(dim=1)
 
     def forward(self, x: Tensor, mask: Tensor):
         inp = torch.cat([x * mask, mask], dim=1)
         enc = self.downsample(inp)
         emb = self.bottle_neck(enc)
-        attn_masks = self.softmax(self.upsample_attn(emb))
-        contents = self.tanh(self.upsample_content(emb))
+        attn_masks = self.attn_activation(self.upsample_attn(emb))
+        contents = self.content_activation(self.upsample_content(emb))
 
         bg_mask = attn_masks[:, -1:, :, :]
         attn_masks = attn_masks[:, :-1, :, :]
 
         fake_img = (attn_masks * contents).sum(dim=1, keepdim=True) + x * bg_mask
         return fake_img
-

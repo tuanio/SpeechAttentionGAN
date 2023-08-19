@@ -67,4 +67,5 @@ class SimpleDownsample(nn.Module):
         x = self.pad_reflect(x)
         return self.model(x)
 
+
 register_downsample("simple", SimpleDownsample)

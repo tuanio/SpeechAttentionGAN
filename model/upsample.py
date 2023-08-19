@@ -100,6 +100,7 @@ class SimpleUpsample(nn.Module):
     def forward(self, x: Tensor):
         return self.model(x)
 
+
 class AttentionMaskUpsample(nn.Module):
     def __init__(
         self,
@@ -175,7 +176,6 @@ class AttentionMaskUpsample(nn.Module):
 
     def forward(self, x: Tensor):
         return self.model(x)
-
 
 
 register_upsample("simple", SimpleUpsample)

@@ -310,7 +310,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
                 :, :, : self.phase.size(2)
             ].cpu()
 
-            mags = (mags + 1) * 0.5
+            # mags = (mags + 1) * 0.5
 
             cal_istft = T.InverseSpectrogram(**self.hparams.istft_params).cpu()
             wav = cal_istft(mags + torch.exp(self.phase.cpu() * 1j))

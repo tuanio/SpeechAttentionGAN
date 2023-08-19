@@ -1,5 +1,6 @@
 from torch import nn, Tensor
 
+
 class PatchGAN(nn.Module):
     # 70x70 patch gan from cyclegan
     def __init__(

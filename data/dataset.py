@@ -60,7 +60,10 @@ class SpeechDataset(Dataset):
         #     pass
 
         # normalize to range [-1, 1] to map with tanh activation in gan
-        self.transforms = TVT.Compose([TVT.Normalize(mean=(0.5), std=(0.5))])
+        # self.transforms = TVT.Compose([TVT.Normalize(mean=(0.5), std=(0.5))])
+
+        # not transform
+        self.transforms = None
 
     def __len__(self):
         return len(self.src_pool)
@@ -72,11 +75,18 @@ class SpeechDataset(Dataset):
         # randomly choice tgt domain
         tgt_audio = random.choice(self.tgt_pool)
 
-        magnitude_A = self.transforms(src_audio["magnitude"])
-        phase_A = self.transforms(src_audio["phase"])
+        magnitude_A = src_audio["magnitude"]
+        phase_A = src_audio["phase"]
 
-        magnitude_B = self.transforms(tgt_audio["magnitude"])
-        phase_B = self.transforms(tgt_audio["phase"])
+        magnitude_B = tgt_audio["magnitude"]
+        phase_B = tgt_audio["phase"]
+
+        if self.transforms:
+            magnitude_A = self.transforms(magnitude_A)
+            phase_A = self.transforms(phase_A)
+
+            magnitude_B = self.transforms(magnitude_B)
+            phase_B = self.transforms(phase_B)
 
         # every feature have shape (1, n_fft // 2 + 1, seq_len)
 
