@@ -52,7 +52,7 @@ model:
       paddings: ${networks.simple_downsample.paddings}
       dilations: ${networks.simple_downsample.dilations}
     bottle_neck_params:
-      n_blocks: 9 # 6 for 128x128, 9 for 256x256
+      n_blocks: 12 # 6 for 128x128, 9 for 256x256
       kernel_size: 3
       stride: 1
       padding: 1
@@ -126,7 +126,7 @@ logger:
     have: true
     params:
       project: speech_attn_gan_helicopter
-      name: new_code_raw_feat_9rb
+      name: new_code_raw_feat_12rb
 
 trainer:
   devices: 4
