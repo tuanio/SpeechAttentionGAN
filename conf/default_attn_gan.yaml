@@ -123,7 +123,7 @@ model:
 
 logger:
   wandb:
-    have: true
+    have: false
     params:
       project: speech_attn_gan_helicopter
       name: speech_attn_gan_new_code

@@ -313,10 +313,12 @@ class MagnitudeAttentionGAN(L.LightningModule):
             cal_istft = T.InverseSpectrogram(**self.hparams.istft_params).cpu()
             wav = cal_istft(mags.cpu() + torch.exp(self.phase.cpu() * 1j))
             torchaudio.save("temporary.wav", wav, self.sr)
-            data = [[wandb.Audio("temporary.wav", caption="Clean -> Noisy")]]
-            self.logger.log_table(
-                key="AudioTable", columns=["Generated_Audio"], data=data
-            )
+
+            if logging:
+                data = [[wandb.Audio("temporary.wav", caption="Clean -> Noisy")]]
+                self.logger.log_table(
+                    key="AudioTable", columns=["Generated_Audio"], data=data
+                )
 
     def on_train_epoch_end(self):
         if self.hparams.cfg.log_wav:
