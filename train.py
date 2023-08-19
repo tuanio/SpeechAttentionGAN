@@ -35,6 +35,12 @@ def main(cfg: DictConfig):
         print("Start testing...")
         trainer.test(model, datamodule=dm)
 
+    if cfg.exp.predict:
+        model = MagnitudeAttentionGAN.load_from_checkpoint(cfg.exp.ckpt_path)
+        model.eval()
+        model.plot_wav(False)
+        
+
 
 if __name__ == "__main__":
     main()

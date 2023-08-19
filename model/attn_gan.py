@@ -302,7 +302,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
 
         self.untoggle_optimizer(optimizer_d)
 
-    def plot_wav(self):
+    def plot_wav(self, logging=True):
         with torch.inference_mode():
             mag_coms = self.mag_coms.type_as(self.gen_A2B.downsample.model[0].weight)
             fake_magnitude_B = self.gen_A2B(mag_coms, self.gen_mask(mag_coms, False))
@@ -320,7 +320,7 @@ class MagnitudeAttentionGAN(L.LightningModule):
 
     def on_train_epoch_end(self):
         if self.hparams.cfg.log_wav:
-            self.plot_wav()
+            self.plot_wav(True)
 
     # def on_train_epoch_end(self):
     #     mag_A = torch.stack([i[0] for i in self.training_output], dim=0).type_as(

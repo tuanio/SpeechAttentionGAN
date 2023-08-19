@@ -137,6 +137,7 @@ trainer:
 
 
 exp:
-  train: true
+  train: false
   test: false
-  predict: false
+  predict: true
+  ckpt_path: /home/stud_vantuan/projects/aug_asr/SpeechAttentionGAN/speech_attn_gan_helicopter/23xda8wt/checkpoints/epoch=99-step=33900.ckpt
